@@ -25,8 +25,8 @@ class SAMGASPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('sAMGAS')
-            ->path('sAMGAS')
+            ->id('SAMGAS')
+            ->path('SAMGAS')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

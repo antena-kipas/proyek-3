@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -13,42 +13,97 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create the Super User
-        User::create([
-            'name' => 'Super User',
-            'email' => 'superuser@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'super-user',
-            'kelas' => null,
-            'mapel' => null,
-        ]);
-
-        // 2. Create 6 Class Teachers (Wali Kelas)
-        for ($i = 1; $i <= 6; $i++) {
-            User::factory()->create([
-                'name' => 'Guru Kelas ' . $i,
-                'email' => 'guru.kelas.' . $i . '@example.com',
-                'role' => 'guru',
-                'kelas' => $i, // Use integer as per new schema
+        DB::table('users')->insert([
+            [
+                'name' => 'Teti Sukaesih',
+                'email' => 'tetisukesih@example.com',
+                'password' => Hash::make('password'),
                 'mapel' => null,
-            ]);
-        }
-
-        // 3. Create Subject Teachers (Guru Mata Pelajaran)
-        User::factory()->create([
-            'name' => 'Guru Penjas',
-            'email' => 'guru.penjas@example.com',
-            'role' => 'guru',
-            'kelas' => null, // Not a homeroom teacher
-            'mapel' => 'Penjas', // Fill the new 'mapel' column
-        ]);
-
-        User::factory()->create([
-            'name' => 'Guru Agama',
-            'email' => 'guru.agama@example.com',
-            'role' => 'guru',
-            'kelas' => null, // Not a homeroom teacher
-            'mapel' => 'Agama', // Fill the new 'mapel' column
+                'role' => 'guru',
+                'kelas' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Eneng Siti Nurjanah',
+                'email' => 'enengsitinurjanah@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'guru',
+                'kelas' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Carman',
+                'email' => 'carman@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'guru',
+                'kelas' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Irfan Taufik Ginanjar',
+                'email' => 'irfantaufikginanjar@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'guru',
+                'kelas' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Dewi Meliasari',
+                'email' => 'dewimeliasari@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'guru',
+                'kelas' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Ating Herawati',
+                'email' => 'atingherawati@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'guru',
+                'kelas' => 6,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Ela',
+                'email' => 'ela@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => 'Pendidikan Agama Islam',
+                'role' => 'guru',
+                'kelas' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Riki Irmawan Nasution',
+                'email' => 'rikiirmawannasution@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => 'Pendidikan olahraga dan jasmani',
+                'role' => 'guru',
+                'kelas' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Super User',
+                'email' => 'superuser013@example.com',
+                'password' => Hash::make('password'),
+                'mapel' => null,
+                'role' => 'super-user',
+                'kelas' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
