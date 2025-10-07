@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import BottomNavBar from '../components/BottomNavBar';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 type BuatRPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BuatRPP'>;
 
@@ -17,9 +18,61 @@ const LabeledInput = ({ label }: { label: string }) => (
 
 const BuatRPPScreen = () => {
   const navigation = useNavigation<BuatRPPScreenNavigationProp>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalStatus, setModalStatus] = useState<'confirm' | 'loading' | 'success' | 'error'>('confirm');
+  const [timestamp, setTimestamp] = useState('');
+
+  const handleConfirmAndCreate = () => {
+    setModalStatus('loading');
+    // Simulate an async operation that can fail
+    setTimeout(() => {
+      if (Math.random() > 0.5) { // Simulate success 50% of the time
+        const now = new Date();
+        const formattedTimestamp = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        setTimestamp(formattedTimestamp);
+        setModalStatus('success');
+      } else { // Simulate failure
+        setModalStatus('error');
+      }
+    }, 2000);
+  };
+
+  const handleRetry = () => {
+    // Reset status to loading and try again
+    setModalStatus('loading');
+    handleConfirmAndCreate();
+  };
+
+  const openModal = () => {
+    setModalStatus('confirm'); // Ensure it always starts with confirmation
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    // Reset states after a short delay to allow animation to finish
+    setTimeout(() => {
+      setModalStatus('confirm');
+      setTimestamp('');
+    }, 300);
+  };
 
   return (
     <View style={styles.container}>
+      <ConfirmationModal
+        visible={modalVisible}
+        status={modalStatus}
+        onConfirm={handleConfirmAndCreate}
+        onCancel={closeModal}
+        onRetry={handleRetry}
+        title="Konfirmasi"
+        message="Apakah Anda yakin ingin membuat dokumen ini?"
+        documentType="RPP"
+        successMessage="BERHASIL Dibuat"
+        errorMessage="GAGAL Dibuat. Silakan coba lagi."
+        timestamp={timestamp}
+      />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingContainer}
@@ -30,7 +83,7 @@ const BuatRPPScreen = () => {
               <Text style={styles.backButtonText}>←</Text>
             </TouchableOpacity>
             <Text style={styles.headerTitle}>RPP</Text>
-            <Button mode="contained" onPress={() => console.log('Buat pressed')} style={styles.buatButton}>
+            <Button mode="contained" onPress={openModal} style={styles.buatButton}>
               Buat
             </Button>
           </View>
@@ -86,8 +139,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: 'gray',
+    color: 'black',
     marginBottom: 5,
+    fontWeight: 'bold',
   },
   input: {
     borderBottomWidth: 1,

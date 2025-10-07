@@ -1,21 +1,27 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-
+// Definisikan tipe untuk navigasi agar 'navigate' memiliki auto-complete dan type-checking
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const BottomNavBar = () => {
+  const navigation = useNavigation<NavigationProp>();
+
   return (
     <View style={styles.container}>
       <IconButton
         icon="home-circle-outline"
         size={50}
-        onPress={() => console.log('Home pressed')}
+        onPress={() => navigation.navigate('Home')}
       />
       <IconButton
         icon="account-circle"
         size={50}
-        onPress={() => console.log('Profile pressed')}
+        onPress={() => console.log('Profile pressed')} // Akan kita implementasikan nanti
       />
     </View>
   );
