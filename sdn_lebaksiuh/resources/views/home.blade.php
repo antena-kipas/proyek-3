@@ -95,6 +95,9 @@
                                     <li class="nav-item">
                                         <a href="#">Login</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="#">SULTAN</a>
+                                    </li>
                                 </ul>
                             </div> <!-- navbar collapse -->
                         </nav> <!-- navbar -->
