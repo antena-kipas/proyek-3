@@ -16,12 +16,12 @@ const BottomNavBar = () => {
       <IconButton
         icon="home-circle-outline"
         size={50}
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Home' }] })}
       />
       <IconButton
         icon="account-circle"
         size={50}
-        onPress={() => console.log('Profile pressed')} // Akan kita implementasikan nanti
+        onPress={() => navigation.navigate('Profile')}
       />
     </View>
   );

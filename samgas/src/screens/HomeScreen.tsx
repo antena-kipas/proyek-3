@@ -8,9 +8,9 @@ import { HomeScreenProps } from '../navigation/types';
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const menuItems = [
-    { id: 'rpp', label: 'RPP', icon: 'file-document-outline' },
-    { id: 'silabus', label: 'SILABUS', icon: 'file-chart-outline' },
-    { id: 'absensi', label: 'Absensi', icon: 'account-check-outline' },
+    { id: 'rpp', label: 'RPP', icon: 'file-document-outline'},
+    { id: 'silabus', label: 'SILABUS', icon: 'file-chart-outline'},
+    { id: 'absensi', label: 'Absensi', icon: 'account-check-outline'},
   ];
 
   return (
@@ -23,6 +23,10 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             onPress={() => {
               if (item.id === 'rpp') {
                 navigation.navigate('RPP');
+              } else if (item.id === 'silabus') {
+                navigation.navigate('Silabus');
+              } else if (item.id === 'absensi') {
+                navigation.navigate('Absensi');
               } else {
                 console.log(`${item.label} pressed`);
               }

@@ -9,6 +9,7 @@ interface ConfirmationModalProps {
   onRetry?: () => void;
   title: string;
   message: string;
+  messageColor?: string;
   successMessage?: string;
   errorMessage?: string;
   documentType?: string;
@@ -23,6 +24,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onRetry,
   title,
   message,
+  messageColor = 'black',
   successMessage = 'BERHASIL Dibuat',
   errorMessage = 'GAGAL Dibuat',
   documentType = 'Dokumen',
@@ -81,7 +83,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         return (
           <>
             <Text style={styles.modalTitle}>{title}</Text>
-            <Text style={styles.modalText}>{message}</Text>
+            <Text style={[styles.modalText, { color: messageColor }]}>{message}</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
                 style={[styles.modalButton, styles.modalButtonNo]}

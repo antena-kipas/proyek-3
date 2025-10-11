@@ -6,41 +6,39 @@ import { RootStackParamList } from '../navigation/types';
 import { useNavigation } from '@react-navigation/native';
 import BottomNavBar from '../components/BottomNavBar';
 
-type RPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'RPP'>;
+// Tipe navigasi yang benar untuk layar ini
+type SilabusScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Silabus'>;
 
-const RPPScreen = () => {
-  const navigation = useNavigation<RPPScreenNavigationProp>();
+const SilabusScreen = () => {
+  const navigation = useNavigation<SilabusScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {/* Wrap Avatar.Icon in a Card to make it a rounded square */}
         <Card style={styles.card}>
           <Card.Content>
             <Avatar.Icon
-              icon="file-document-outline"
-              size={36} // Adjusted size to fit card padding
+              icon="file-chart-outline" // Ikon yang sesuai untuk Silabus
+              size={36}
               color="#000"
-              style={styles.icon} // Style for transparent background
+              style={styles.icon}
             />
           </Card.Content>
         </Card>
 
-        {/* Center Title */}
-        <Text style={styles.headerTitle}>RPP</Text>
+        <Text style={styles.headerTitle}>Silabus</Text>
 
-        {/* Right Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
       </View>
 
       <Text style={styles.menuTitle}>Daftar Menu</Text>
-      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('BuatRPP')}>
-        <Text style={styles.menuButtonText}>Buat RPP</Text>
+      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('BuatSilabus')}>
+        <Text style={styles.menuButtonText}>Buat Silabus</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('DaftarRPP')}>
-        <Text style={styles.menuButtonText}>Daftar RPP</Text>
+      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('DaftarSilabus')}>
+        <Text style={styles.menuButtonText}>Daftar Silabus</Text>
       </TouchableOpacity>
       <BottomNavBar />
     </View>
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 30,
     position: 'relative',
-    height: 60, // Adjusted height for the card
+    height: 60,
   },
   card: {
     position: 'absolute',
@@ -70,10 +68,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#E0E0E0',
-    borderRadius: 15, // Rounded corners to match mockup
+    borderRadius: 15,
   },
   icon: {
-    backgroundColor: 'transparent', // Make Avatar background transparent to show Card color
+    backgroundColor: 'transparent',
   },
   headerTitle: {
     fontSize: 24,
@@ -113,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RPPScreen;
+export default SilabusScreen;

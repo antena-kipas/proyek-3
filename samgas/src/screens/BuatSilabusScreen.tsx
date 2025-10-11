@@ -8,7 +8,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-type BuatRPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BuatRPP'>;
+type BuatSilabusScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BuatSilabus'>;
 
 const LabeledInput = ({ label, value, onChangeText, placeholder }: { label: string, value: string, onChangeText: (text: string) => void, placeholder?: string }) => (
   <View style={styles.inputContainer}>
@@ -22,9 +22,9 @@ const LabeledInput = ({ label, value, onChangeText, placeholder }: { label: stri
   </View>
 );
 
-const BuatRPPScreen = () => {
-  const navigation = useNavigation<BuatRPPScreenNavigationProp>();
-
+const BuatSilabusScreen = () => {
+  const navigation = useNavigation<BuatSilabusScreenNavigationProp>();
+  
   // --- State untuk Modal ---
   const [modalVisible, setModalVisible] = useState(false);
   const [modalStatus, setModalStatus] = useState<'confirm' | 'loading' | 'success' | 'error'>('confirm');
@@ -34,22 +34,22 @@ const BuatRPPScreen = () => {
   const userRole: 'super-user' | 'guru' = 'super-user'; // Ganti ke 'guru' untuk melihat perbedaannya
 
   const [namaGuru, setNamaGuru] = useState('');
-  const [mataPelajaran, setMataPelajaran] = useState('');
-  const [topikMateri, setTopikMateri] = useState('');
-  const [alokasiWaktu, setAlokasiWaktu] = useState('');
-  const [tujuan1, setTujuan1] = useState('');
-  const [tujuan2, setTujuan2] = useState('');
+  const [semester, setSemester] = useState('');
+  const [judulBuku, setJudulBuku] = useState('');
+  const [subtema, setSubtema] = useState('');
+  const [kompetensiInti, setKompetensiInti] = useState('');
+
 
   // --- Fungsi-fungsi Handler Modal ---
   const handleConfirmAndCreate = () => {
     setModalStatus('loading');
     setTimeout(() => {
-      if (Math.random() > 0.5) {
+      if (Math.random() > 0.5) { 
         const now = new Date();
         const formattedTimestamp = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
         setTimestamp(formattedTimestamp);
         setModalStatus('success');
-      } else {
+      } else { 
         setModalStatus('error');
       }
     }, 2000);
@@ -83,7 +83,7 @@ const BuatRPPScreen = () => {
         onRetry={handleRetry}
         title="Konfirmasi"
         message="Apakah Anda yakin ingin membuat dokumen ini?"
-        documentType="RPP"
+        documentType="Silabus"
         successMessage="BERHASIL Dibuat"
         errorMessage="GAGAL Dibuat. Silakan coba lagi."
         timestamp={timestamp}
@@ -98,7 +98,7 @@ const BuatRPPScreen = () => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={styles.backButtonText}>←</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>RPP</Text>
+            <Text style={styles.headerTitle}>Silabus</Text>
             <Button mode="contained" onPress={openModal} style={styles.buatButton}>
               Buat
             </Button>
@@ -114,34 +114,28 @@ const BuatRPPScreen = () => {
               />
             )}
             <LabeledInput
-              label="Mata Pelajaran"
-              value={mataPelajaran}
-              onChangeText={setMataPelajaran}
-              placeholder="Contoh: Matematika"
+              label="Semester"
+              value={semester}
+              onChangeText={setSemester}
+              placeholder="Contoh: Ganjil"
             />
             <LabeledInput
-              label="Topik Materi"
-              value={topikMateri}
-              onChangeText={setTopikMateri}
-              placeholder="Contoh: Bangun Ruang"
+              label="Judul Buku tematik"
+              value={judulBuku}
+              onChangeText={setJudulBuku}
+              placeholder="Masukkan judul buku"
             />
             <LabeledInput
-              label="Alokasi Waktu"
-              value={alokasiWaktu}
-              onChangeText={setAlokasiWaktu}
-              placeholder="Contoh: 2 x 45 menit"
+              label="Subtema"
+              value={subtema}
+              onChangeText={setSubtema}
+              placeholder="Masukkan subtema"
             />
             <LabeledInput
-              label="Tujuan 1"
-              value={tujuan1}
-              onChangeText={setTujuan1}
-              placeholder="Masukkan tujuan pembelajaran pertama"
-            />
-            <LabeledInput
-              label="Tujuan 2"
-              value={tujuan2}
-              onChangeText={setTujuan2}
-              placeholder="Masukkan tujuan pembelajaran kedua"
+              label="Kompetensi inti"
+              value={kompetensiInti}
+              onChangeText={setKompetensiInti}
+              placeholder="Masukkan kompetensi inti"
             />
           </View>
         </ScrollView>
@@ -164,8 +158,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20, // Adjusted padding
     paddingBottom: 20,
+    paddingTop: 20,
   },
   backButtonText: {
     fontSize: 30,
@@ -200,4 +194,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BuatRPPScreen;
+export default BuatSilabusScreen;

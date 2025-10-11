@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       />
       <Button
         mode="contained"
-        onPress={() => navigation.navigate('Home')} // Diubah untuk navigasi
+        onPress={() => navigation.replace('Home')} // Diubah untuk navigasi
         style={styles.loginButton}
         labelStyle={styles.loginButtonLabel}>
         Login

@@ -1,47 +1,61 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, Card } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { useNavigation } from '@react-navigation/native';
 import BottomNavBar from '../components/BottomNavBar';
 
-type RPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'RPP'>;
+type AbsensiScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Absensi'>;
 
-const RPPScreen = () => {
-  const navigation = useNavigation<RPPScreenNavigationProp>();
+const AbsensiScreen = () => {
+  const navigation = useNavigation<AbsensiScreenNavigationProp>();
+  const userRole: 'super-user' | 'guru' = 'super-user'; // Hardcoded for now
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {/* Wrap Avatar.Icon in a Card to make it a rounded square */}
         <Card style={styles.card}>
           <Card.Content>
             <Avatar.Icon
-              icon="file-document-outline"
-              size={36} // Adjusted size to fit card padding
+              icon="account-check-outline" // Ikon yang sesuai untuk Absensi
+              size={36}
               color="#000"
-              style={styles.icon} // Style for transparent background
+              style={styles.icon}
             />
           </Card.Content>
         </Card>
 
-        {/* Center Title */}
-        <Text style={styles.headerTitle}>RPP</Text>
+        <Text style={styles.headerTitle}>Absensi</Text>
 
-        {/* Right Back Button */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
       </View>
 
       <Text style={styles.menuTitle}>Daftar Menu</Text>
-      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('BuatRPP')}>
-        <Text style={styles.menuButtonText}>Buat RPP</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('DaftarRPP')}>
-        <Text style={styles.menuButtonText}>Daftar RPP</Text>
-      </TouchableOpacity>
+      {userRole === 'super-user' ? (
+        <>
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('TambahMurid')}>
+            <Text style={styles.menuButtonText}>Tambah Murid</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('HapusMurid')}>
+            <Text style={styles.menuButtonText}>Hapus Murid</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('DokumenAbsensi')}>
+            <Text style={styles.menuButtonText}>Dokumen Absensi</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('BuatAbsensi')}>
+            <Text style={styles.menuButtonText}>Buat Absensi</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('RekapAbsensi')}>
+            <Text style={styles.menuButtonText}>Rekap Absensi</Text>
+          </TouchableOpacity>
+        </>
+      )}
       <BottomNavBar />
     </View>
   );
@@ -60,7 +74,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 30,
     position: 'relative',
-    height: 60, // Adjusted height for the card
+    height: 60,
   },
   card: {
     position: 'absolute',
@@ -70,10 +84,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#E0E0E0',
-    borderRadius: 15, // Rounded corners to match mockup
+    borderRadius: 15,
   },
   icon: {
-    backgroundColor: 'transparent', // Make Avatar background transparent to show Card color
+    backgroundColor: 'transparent',
+    
   },
   headerTitle: {
     fontSize: 24,
@@ -113,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RPPScreen;
+export default AbsensiScreen;
