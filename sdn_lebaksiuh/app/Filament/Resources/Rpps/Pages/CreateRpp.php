@@ -10,12 +10,11 @@ class CreateRpp extends CreateRecord
 {
     protected static string $resource = RppResource::class;
 
-    // Method ini akan menimpa action default
     protected function getFormActions(): array
     {
         return [
-            // Kita hanya akan menampilkan action "Create" utama
             $this->getCreateFormAction(),
+            $this->getCancelFormAction(),
         ];
     }
 }
