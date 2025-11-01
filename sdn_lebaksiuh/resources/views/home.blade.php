@@ -93,7 +93,7 @@
                                         <a class="page-scroll" href="#gallery">Gallery</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#">Login</a>
+                                        <a href="/SAMGAS">Login</a>
                                     </li>
                                 </ul>
                             </div> <!-- navbar collapse -->
@@ -109,8 +109,8 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-8">
                             <div class="slider_content">
-                                <h2 class="slider_title wow fadeInLeftBig" data-wow-duration="1.3s" data-wow-delay="0.2s">Lorem ipsum dolor sit<span> Lorem ipsum</span></h2>
-                                <p class="wow fadeInLeftBig" data-wow-duration="1.3s" data-wow-delay="0.5s">Lorem ipsum dolor amet, consetetur sadipscing elitr sed diam nonumy eirmod tempor invidun dolore.</p>
+                                <h2 class="slider_title wow fadeInLeftBig" data-wow-duration="1.3s" data-wow-delay="0.2s"><span> SDN LEBAKSIUH</span></h2>
+                                <p class="wow fadeInLeftBig" data-wow-duration="1.3s" data-wow-delay="0.5s">Dusun Lebaksiuh, Desa Lebaksiuh, Kecamatan Jatigede, Kabupaten Sumedang, Jawa Barat</p>
                             </div> <!-- slider content -->
                         </div>
                     </div> <!-- row -->
@@ -125,43 +125,29 @@
 
     <section id="about" class="about_area pt-130 pb-130">
         <div class="about_wrapper">
-            <div class="about_image bg_cover" style="background-image: url({{ asset('images/about_image.jpg') }})"></div> <!-- about image -->
+            <div class="about_image bg_cover" style="background-image: url({{ asset('images/hero-area.jpg') }})"></div> <!-- about image -->
             <div class="container">
                 <div class="row justify-content-end">
                     <div class="col-lg-6">
                         <div class="about_content">
                             <div class="section_title">
-                                <h3 class="title">About Us <br> TraveLand in <span>Numbers</span></h3>
-                                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod tempor invidunt ut labore et dolore magna aliqyam era sed diam voluptua. At vero eos et accusam etjusto duo dolres etea reb. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.</p>
+                                <h3 class="title">Tentang Kami<br>SDN <span>Lebaksiuh</span></h3>
+                                <p>SDN Lbeaksiuh merupakan sekolah dasar yang berada di Dusun Lebaksiuh, Desa Lebaksiuh, Kecamatan Jatigede, Kabupaten Sumedang, Jawa Barat. Dengan kontur geografi perbukitan dan merupakan salah satu wilayah terpencil di sumedang, kami siap memajukan, membina anak didik kami</p>
                             </div> <!-- section title -->
-                            <a href="javascript:void(0)" class="main-btn">Read More</a>
+                            <!-- <a href="javascript:void(0)" class="main-btn">Read More</a> -->
                         </div> <!-- about content -->
                         <div class="about_counter d-flex flex-wrap">
                             <div class="single_counter counter_1 d-flex justify-content-center align-items-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.2s">
                                 <div class="counter_wrapper">
-                                    <span class="counter">0</span>
-                                    <p>Lorem</p>
+                                    <span class="counter">8</span>
+                                    <p>Staff</p>
                                 </div> <!-- single wrapper -->
                             </div> <!-- single counter -->
                             
                             <div class="single_counter counter_2 d-flex justify-content-center align-items-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.5s">
                                 <div class="counter_wrapper">
-                                    <span class="counter">0</span>
-                                    <p>Lorem</p>
-                                </div> <!-- single wrapper -->
-                            </div> <!-- single counter -->
-                            
-                            <div class="single_counter counter_2 d-flex justify-content-center align-items-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.8s">
-                                <div class="counter_wrapper">
-                                    <span class="counter">0</span>
-                                    <p>Lorem</p>
-                                </div> <!-- single wrapper -->
-                            </div> <!-- single counter -->
-                            
-                            <div class="single_counter counter_1 d-flex justify-content-center align-items-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="1.1s">
-                                <div class="counter_wrapper">
-                                    <span class="counter">0</span>
-                                    <p>Lorem</p>
+                                    <span class="counter">76</span>
+                                    <p>Murid</p>
                                 </div> <!-- single wrapper -->
                             </div> <!-- single counter -->
                         </div> <!-- about_counter -->
@@ -181,53 +167,75 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <div class="section_title text-center pb-25">
-                        <h3 class="title">Fasilitas We Provide</h3>
-                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod tempor invidunt ut labore et dolore magna </p>
+                        <h3 class="title">Fasilitas</h3>
+                        <!-- <p> </p> -->
                     </div> <!-- section title -->
                 </div>
             </div> <!-- row -->
             <div class="row">
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-sm-6">
                     <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.2s">
                         <div class="services_icon">
-                            <i class="lni lni-apartment"></i>
+                            <i class="lni lni-blackboard"></i>
                         </div>
                         <div class="services_content">
-                            <h4 class="title">lorem</h4>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod.</p>
+                            <h4 class="title">6 Ruang Kelas</h4>
+                            <p>Fasilitas ruang kelas yang nyaman dan memadai untuk proses belajar mengajar.</p>
                         </div>
                     </div> <!-- single service -->
                 </div>
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-sm-6">
                     <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.4s">
                         <div class="services_icon">
-                            <i class="lni lni-plane"></i>
+                            <i class="lni lni-drop"></i>
                         </div>
                         <div class="services_content">
-                            <h4 class="title">lorem</h4>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod.</p>
+                            <h4 class="title">Toilet</h4>
+                            <p>Fasilitas toilet yang bersih dan terawat untuk kenyamanan siswa dan guru.</p>
                         </div>
                     </div> <!-- single service -->
                 </div>
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-sm-6">
                     <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.6s">
                         <div class="services_icon">
-                            <i class="lni lni-ship"></i>
+                            <i class="lni lni-book"></i>
                         </div>
                         <div class="services_content">
-                            <h4 class="title">lorem</h4>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod.</p>
+                            <h4 class="title">Perpustakaan</h4>
+                            <p>Koleksi buku dan sumber belajar yang lengkap untuk mendukung minat baca.</p>
                         </div>
                     </div> <!-- single service -->
                 </div>
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-sm-6">
                     <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="0.8s">
                         <div class="services_icon">
-                            <i class="lni lni-car-alt"></i>
+                            <i class="lni lni-display"></i>
                         </div>
                         <div class="services_content">
-                            <h4 class="title">lorem</h4>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod.</p>
+                            <h4 class="title">SmartTV</h4>
+                            <p>Televisi pintar untuk media pembelajaran interaktif di setiap kelas.</p>
+                        </div>
+                    </div> <!-- single service -->
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="1.0s">
+                        <div class="services_icon">
+                            <i class="lni lni-laptop"></i>
+                        </div>
+                        <div class="services_content">
+                            <h4 class="title">Infocus & Sound</h4>
+                            <p>Proyektor infocus dan sistem suara untuk presentasi dan kegiatan belajar.</p>
+                        </div>
+                    </div> <!-- single service -->
+                </div>
+                <div class="col-lg-4 col-sm-6">
+                    <div class="single_service mt-30 text-center wow fadeInUpBig" data-wow-duration="1.3s" data-wow-delay="1.2s">
+                        <div class="services_icon">
+                            <i class="lni lni-flag"></i>
+                        </div>
+                        <div class="services_content">
+                            <h4 class="title">Lapangan Upacara</h4>
+                            <p>Lapangan luas untuk upacara bendera, olahraga, dan kegiatan outdoor lainnya.</p>
                         </div>
                     </div> <!-- single service -->
                 </div>
@@ -254,8 +262,8 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <div class="section_title text-center pb-25">
-                        <h3 class="title">Recent Blog Post</h3>
-                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed dianum eirmod tempor invidunt ut labore et dolore magna </p>
+                        <h3 class="title">Recent update</h3>
+                        <!-- <p> </p> -->
                     </div> <!-- section title -->
                 </div>
             </div> <!-- row -->
@@ -263,40 +271,38 @@
                 <div class="col-lg-6">
                     <div class="single_blog mt-30">
                         <div class="blog_image">
-                            <img src="{{ asset('images/blog-1.jpg') }}" alt="blog">
+                            <img src="{{ asset('images/upacara.jpeg') }}" alt="blog">
                         </div>
                         <div class="blog_content">
                             <div class="blog_meta">
                                 <ul>
-                                    <li>Posted by: <a href="javascript:void(0)">Michle Smith</a></li>
-                                    <li>14 June 2023</li>
+                                    <li>Posted by: <a href="javascript:void(0)">Sultan</a></li>
+                                    <li>28 Oktober 2025</li>
                                 </ul>
                             </div>
-                            <h4 class="blog_title"><a href="javascript:void(0)">Tonumy eirmod tempor invidunt ut labore et dolore magn aaliq yam erat, sed diam voluptua.</a></h4>
-                            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn aaliq yam erat, sed diam voluptua. At vero eos et accusam et justo dolores  ea rebum Stet clita kasd gubergren sea.</p>
+                            <h4 class="blog_title"><a href="javascript:void(0)"><b>Upacara untuk memperingati Sumpah Pemuda.</b></a></h4>
+                            <p>SDN Lebaksiuh dengan bangga menyelenggarakan upacara peringatan Hari Sumpah Pemuda. Acara ini bertujuan untuk menanamkan semangat nasionalisme dan persatuan di kalangan siswa, mengingatkan kembali akan perjuangan para pemuda dalam meraih kemerdekaan dan menjaga keutuhan bangsa.</p>
                         </div>
                     </div> <!-- single blog -->
                 </div>
                 <div class="col-lg-6">
                     <div class="single_blog d-sm-flex mt-30">
                         <div class="blog_image">
-                            <img src="{{ asset('images/blog-2.jpg') }}" alt="blog">
+                            <img src="{{ asset('images/pramuka.jpeg') }}" alt="blog">
                         </div>
                         <div class="blog_content blog_content_2 media-body">
-                            <h4 class="blog_title"><a href="javascript:void(0)">Tonumy eirmod temporinvi unt ut labore et dolore</a></h4>
-                            <p>Lorem ipsum dolor sit ametcon setetur sadipscing elitr, sed diam nonumy eirmod tempor</p>
-                            <a href="javascript:void(0)" class="more">Read More</a>
+                            <h4 class="blog_title"><a href="javascript:void(0)">Pramuka</a></h4>
+                            <p>para siswa dan siswi sdn lebaksiuh melakukan kegiatan pramuka </p>
                         </div>
                     </div> <!-- single blog -->
                     
                     <div class="single_blog d-sm-flex mt-30">
                         <div class="blog_image">
-                            <img src="{{ asset('images/blog-3.jpg') }}" alt="blog">
+                            <img src="{{ asset('images/piala.jpeg') }}" alt="blog">
                         </div>
                         <div class="blog_content blog_content_2 media-body">
-                            <h4 class="blog_title"><a href="javascript:void(0)">Tonumy eirmod temporinvi unt ut labore et dolore</a></h4>
-                            <p>Lorem ipsum dolor sit ametcon setetur sadipscing elitr, sed diam nonumy eirmod tempor</p>
-                            <a href="javascript:void(0)" class="more">Read More</a>
+                            <h4 class="blog_title"><a href="javascript:void(0)">Prestasi</a></h4>
+                            <p>Pada tanggal 10 september 2025 SDN Lebaksiuh menjuarai lomba FTBI di tingkat kecamatan</p>
                         </div>
                     </div> <!-- single blog -->
                 </div>
@@ -318,13 +324,15 @@
                     <div class="col-lg-4 col-md-6 order-md-1 order-lg-1">
                         <div class="footer_about mt-50">
                             <a href="#"><img src="{{ asset('images/logo.svg') }}" alt="logo"></a>
-                            <p>Lorem ipsum dolor sifsddt amet, conse tetur sadipscing elitr, sed diam onumy eirmod tempor invidunt ut labore et dolore magna aliquya.</p>
+                            <p>SDN Lbeaksiuh merupakan sekolah dasar yang berada di Dusun Lebaksiuh, Desa Lebaksiuh, Kecamatan Jatigede, Kabupaten Sumedang, Jawa Barat. Dengan kontur geografi perbukitan dan merupakan salah satu wilayah terpencil di sumedang, kami siap memajukan, membina anak didik kami</p>
+                            <!--
                             <ul class="social">
                                 <li><a class="social_1" href="javascript:void(0)"><i class="lni lni-facebook-original"></i></a></li>
                                 <li><a class="social_2" href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
                                 <li><a class="social_3" href="javascript:void(0)"><i class="lni lni-instagram-original"></i></a></li>
                                 <li><a class="social_4" href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a></li>
                             </ul>
+                            -->
                         </div> <!-- footer about -->
                     </div>
                     <div class="col-lg-4 col-md-12 order-md-3 order-lg-2">
@@ -332,25 +340,21 @@
                             <div class="footer_link mt-45">
                                 <h4 class="footer_title">Quick Link</h4>
                                 <ul class="link">
-                                    <li><a href="javascript:void(0)">Home</a></li>
-                                    <li><a href="javascript:void(0)">About</a></li>
-                                    <li><a href="javascript:void(0)">Trip Pacakge</a></li>
-                                    <li><a href="javascript:void(0)">Services</a></li>
-                                    <li><a href="javascript:void(0)">Gallery</a></li>
+                                    <li><a href="#home">Home</a></li>
+                                    <li><a href="#about">About</a></li>
+                                    <li><a href="#services">Fasilitas</a></li>
+                                    <li><a href="#gallery">Gallery</a></li>
                                 </ul>
                             </div> <!-- footer link -->
                             <div class="footer_link mt-45">
-                                <h4 class="footer_title">Support</h4>
+                                <h4 class="footer_title">kontak</h4>
                                 <ul class="link">
-                                    <li><a href="javascript:void(0)">Customer Support</a></li>
-                                    <li><a href="javascript:void(0)">Privacy & Policy</a></li>
-                                    <li><a href="javascript:void(0)">Terms & Condition</a></li>
-                                    <li><a href="javascript:void(0)">Forum</a></li>
-                                    <li><a href="javascript:void(0)">Tour Guide</a></li>
+                                    <li><a href="javascript:void(0)">085861593112  (wa only)</a></li>
                                 </ul>
                             </div> <!-- footer link -->
                         </div> <!-- footer link wrapper -->
                     </div>
+                    <!--
                     <div class="col-lg-4 col-md-6 order-md-2 order-lg-3">
                         <div class="footer_subscribe mt-45">
                             <h4 class="footer_title">Subscribe Newsletter</h4>
@@ -361,11 +365,12 @@
                                     <button><i class="lni lni-arrow-right"></i></button>
                                 </form>
                             </div>
-                        </div> <!-- footer subscribe -->
+                        </div> 
                     </div>
+                    -->
                 </div> <!-- row -->
             </div> <!-- container -->
-            <p class="text-center mt-90">Designed and Developed by <a href="#">UIdeck</a></p>
+            <p class="text-center mt-90">Designed and Developed by <a href="#">Sultan dan Anggi</a></p>
         </div> <!-- footer widget -->
     </section>
 

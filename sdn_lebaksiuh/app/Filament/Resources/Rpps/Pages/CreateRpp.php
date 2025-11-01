@@ -13,8 +13,15 @@ class CreateRpp extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            $this->getCreateFormAction(),
+            $this->getCreateFormAction()->label('Simpan'),
             $this->getCancelFormAction(),
         ];
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['user_id'] = auth()->id();
+
+        return $data;
     }
 }

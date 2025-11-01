@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kegiatan_penutups', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('rpps', function (Blueprint $table) {
+            $table->dropColumn('mata_pelajaran');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kegiatan_penutups');
+        Schema::table('rpps', function (Blueprint $table) {
+            $table->string('mata_pelajaran'); // Re-add if rolling back
+        });
     }
 };
