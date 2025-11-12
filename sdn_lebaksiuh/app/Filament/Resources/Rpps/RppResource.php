@@ -47,8 +47,26 @@ class RppResource extends Resource
                     ->label('Backup')
                     ->icon('heroicon-o-archive-box')
                     ->color('info')
-                    ->url(fn (Rpp $record): string => '#') // Placeholder URL
-                    ->openUrlInNewTab(),
+                    ->requiresConfirmation()
+                    ->action(function (Rpp $record) {
+                        try {
+                            \App\Jobs\BackupRppToGoogleDrive::dispatch($record, auth()->user());
+                            \Filament\Notifications\Notification::make()
+                                ->title('Backup Dimulai')
+                                ->body('Proses backup untuk RPP ID ' . $record->id . ' telah dimulai di latar belakang.')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gagal Memulai Backup')
+                                ->body('Terjadi kesalahan: ' . $e->getMessage())
+                                ->danger()
+                                ->persistent()
+                                ->send();
+                        }
+                    })
+                    ->disabled(fn (Rpp $record): bool => !empty($record->google_drive_file_id))
+                    ->tooltip(fn (Rpp $record): string => !empty($record->google_drive_file_id) ? 'RPP ini sudah di-backup' : 'Backup RPP ke Google Drive'),
                 DeleteAction::make(),
             ]);
     }

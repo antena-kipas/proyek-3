@@ -21,3 +21,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+pkey-gservice-sdn-lebaksiuh_gdrive.json
+
+sdn_lebaksiuh/storage/*.json

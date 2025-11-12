@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SilabusResource\Pages;
-use App\Filament\Resources\SilabusResource\RelationManagers;
+use App\Filament\Resources\SilabusResource\Schemas\SilabusForm;
 use App\Models\Silabus;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SilabusResource extends Resource
 {
@@ -19,28 +16,18 @@ class SilabusResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'Silabus';
-
-    protected static ?string $slug = 'silabus';
-
-    public static function getNavigationUrl(): string
-    {
-        return '#';
-    }
-
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                //
-            ]);
+        return SilabusForm::form($form);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id')->label('ID Silabus')->sortable(),
+                Tables\Columns\TextColumn::make('tema')->label('Tema'),
+                Tables\Columns\TextColumn::make('sub_tema')->label('Sub Tema'),
             ])
             ->filters([
                 //
@@ -56,10 +43,19 @@ class SilabusResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageSilabuses::route('/'),
+            'index' => Pages\ListSilabuses::route('/'),
+            'create' => Pages\CreateSilabus::route('/create'),
+            'edit' => Pages\EditSilabus::route('/{record}/edit'),
         ];
     }
 }

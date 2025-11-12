@@ -19,6 +19,7 @@ class Rpp extends Model
         'tema_name',
         'sub_tema_id',
         'sub_tema_name',
+        'google_drive_file_id',
     ];
 
     public function muatan_terpadus(): HasMany

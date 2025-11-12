@@ -60,7 +60,12 @@ class RppDownloadController extends Controller
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_renungkan', 'ayo_renungkan_block', 'urutan_ayo_renungkan', 'konten_renungkan');
 
         // Save the generated document to a temporary file
-        $fileName = 'RPP_' . $rpp->id . '_' . now()->format('Ymd_His') . '.docx';
+        // Sanitize parts of the filename by replacing spaces with underscores
+        $safeSubTema = str_replace(' ', '_', $rpp->sub_tema_name);
+        $safePembelajaran = str_replace(' ', '_', $rpp->pembelajaran_ke);
+
+        // Create the new standardized filename
+        $fileName = 'RPP_' . $rpp->id . '_' . $safeSubTema . '_' . $safePembelajaran . '.docx';
         $tempFilePath = Storage::path('public/temp/' . $fileName); // Use storage for temporary files
 
         // Ensure the directory exists
