@@ -3,14 +3,9 @@
 - 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
 - 5. membuat funsi backup seperti pada bagian rpp
 - 6. pastikan semua user berfungsi, dalam sistem mempunyai 2 kategori user dimana masing masing memiliki role yang berbeda.
-- 3. membuat template silabus
 
 ## Doing
 
-- 2. membuat beberapa fungsi seperti menampilkan daftar silabus
-    > kita memiliki maslaah yaitu relasi tabel indikators yang belum terelasi dengan tabel silabuses
-    * [x] adding kolom kelas pada tabel silabuses
-    * [x] fixing relasi pada tabel indikators
 
 ## Done
 
@@ -19,3 +14,8 @@
     * [x] tabel materi_pelajara`
     * [x] tabel kegiatan_pembelajaran
     * [x] tabel penilaian_diri
+- 2. membuat beberapa fungsi seperti menampilkan daftar silabus
+    > kita memiliki maslaah yaitu relasi tabel indikators yang belum terelasi dengan tabel silabuses
+    * [x] adding kolom kelas pada tabel silabuses
+    * [x] fixing relasi pada tabel indikators
+- 3. membuat template silabus
