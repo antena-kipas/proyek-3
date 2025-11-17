@@ -2,9 +2,15 @@
 
 namespace App\Filament\Resources\SilabusResource\Schemas;
 
+use App\Models\MataPelajaran;
+use App\Services\GeminiAIService;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class SilabusForm
 {
@@ -43,11 +49,11 @@ class SilabusForm
                     ->required(),
 
                 TextInput::make('tema')
-                    ->label('Tema')
+                    ->label('Judul Buku tematik!')
                     ->required(),
 
                 TextInput::make('sub_tema')
-                    ->label('Sub Tema')
+                    ->label('judul bab / nama bab')
                     ->required(),
 
                 \Filament\Forms\Components\Repeater::make('kompetensiIntis')
@@ -62,8 +68,29 @@ class SilabusForm
                     ->columnSpanFull(),
 
                 \Filament\Forms\Components\Select::make('mata_pelajaran_id')
-                    ->relationship('mataPelajaran', 'nama_pelajaran')
                     ->label('Mata Pelajaran')
+                    ->options(function () {
+                        $user = auth()->user();
+
+                        if ($user->role === 'super-user') {
+                            // Super-user sees all subjects
+                            return MataPelajaran::all()->pluck('nama_pelajaran', 'id');
+                        }
+
+                        if ($user->role === 'guru') {
+                            if ($user->mapel) {
+                                // Subject teacher sees only their subject
+                                return MataPelajaran::where('nama_pelajaran', $user->mapel)->pluck('nama_pelajaran', 'id');
+                            } else {
+                                // Homeroom teacher sees all subjects except PAI and PJOK
+                                return MataPelajaran::whereNotIn('nama_pelajaran', ['Pendidikan Agama Islam', 'PJOK'])
+                                                    ->pluck('nama_pelajaran', 'id');
+                            }
+                        }
+
+                        // Default empty for any other case
+                        return [];
+                    })
                     ->required()
                     ->columnSpanFull(),
 
@@ -79,6 +106,10 @@ class SilabusForm
                     ->columns(1)
                     ->columnSpanFull(),
 
+
+
+
+
                 \Filament\Forms\Components\Repeater::make('indikators')
                     ->relationship()
                     ->schema([
@@ -88,6 +119,73 @@ class SilabusForm
                     ])
                     ->label('Indikator')
                     ->addActionLabel('Tambah Indikator')
+                    ->columns(1)
+                    ->columnSpanFull(),
+
+                Actions::make([
+                    Action::make('generate_details_ai')
+                        ->label('Generate Detail Silabus dengan AI')
+                        ->button()
+                        ->icon('heroicon-o-sparkles')
+                        ->action(function (Get $get, Set $set, GeminiAIService $gemini) {
+                            // Set loading state for the new single-field structure
+                            $set('materiPelajaran', [['materi_pelajaran' => 'Memuat...']]);
+                            $set('kegiatanPembelajaran', [['kegiatan_pembelajaran' => 'Memuat...']]);
+                            $set('penilaianDiri', [['penilaian_diri' => 'Memuat...']]);
+
+                            $konteks = [
+                                'kelas' => $get('kelas'),
+                                'semester' => $get('semester'),
+                                'tema' => $get('tema'),
+                                'sub_tema' => $get('sub_tema'),
+                                'mata_pelajaran_id' => $get('mata_pelajaran_id'),
+                                'kompetensi_intis' => $get('kompetensiIntis'),
+                                'kompetensi_dasars' => $get('kompetensiDasars'),
+                                'indikators' => $get('indikators'),
+                            ];
+
+                            $result = $gemini->generateSilabusDetails($konteks);
+
+                            if ($result) {
+                                $set('materiPelajaran', $result['materi_pelajaran']);
+                                $set('kegiatanPembelajaran', $result['kegiatan_pembelajaran']);
+                                $set('penilaianDiri', $result['penilaian_diri']);
+                            } else {
+                                // Handle error, maybe show a notification
+                                $set('materiPelajaran', [['materi_pelajaran' => 'Gagal memuat']]);
+                                $set('kegiatanPembelajaran', [['kegiatan_pembelajaran' => 'Gagal memuat']]);
+                                $set('penilaianDiri', [['penilaian_diri' => 'Gagal memuat']]);
+                            }
+                        }),
+                ])->columnSpanFull(),
+
+                \Filament\Forms\Components\Repeater::make('materiPelajaran')
+                    ->relationship()
+                    ->schema([
+                        \Filament\Forms\Components\Textarea::make('materi_pelajaran')->required(),
+                    ])
+                    ->label('Materi Pelajaran')
+                    ->addActionLabel('Tambah Materi Pelajaran')
+                    ->columns(1)
+                    ->columnSpanFull(),
+
+                \Filament\Forms\Components\Repeater::make('kegiatanPembelajaran')
+                    ->relationship()
+                    ->schema([
+                        \Filament\Forms\Components\Textarea::make('kegiatan_pembelajaran')->required(),
+                    ])
+                    ->label('Kegiatan Pembelajaran')
+                    ->addActionLabel('Tambah Kegiatan Pembelajaran')
+                    ->columns(1)
+                    ->columnSpanFull(),
+
+                \Filament\Forms\Components\Repeater::make('penilaianDiri')
+                    ->relationship()
+                    ->schema([
+                        \Filament\Forms\Components\Textarea::make('penilaian_diri')->required(),
+                    ])
+                    ->label('Penilaian Diri')
+                    ->addActionLabel('Tambah Penilaian Diri')
                     ->columns(1)
                     ->columnSpanFull(),
             ])->columns(2);

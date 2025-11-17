@@ -28,7 +28,9 @@ class RppDownloadController extends Controller
         $templateProcessor->setValue('kelas', $rpp->user->kelas);
         $templateProcessor->setValue('semester', $rpp->semester);
         $templateProcessor->setValue('tema_name', $rpp->tema_name);
+        $templateProcessor->setValue('temaid', $rpp->tema_id);
         $templateProcessor->setValue('sub_tema', $rpp->sub_tema_name); // Assuming sub_tema_name exists
+        $templateProcessor->setValue('subtemaid', $rpp->sub_tema_id);
         $templateProcessor->setValue('pembelajaran_ke', $rpp->pembelajaran_ke);
         $templateProcessor->setValue('tanggal', now()->format('d F Y')); // Current date
         $templateProcessor->setValue('user_name', $rpp->user->name);

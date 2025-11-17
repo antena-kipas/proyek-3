@@ -26,6 +26,10 @@ class SilabusResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('ID Silabus')->sortable(),
+                Tables\Columns\TextColumn::make('user.name')->label('Guru')->sortable(),
+                Tables\Columns\TextColumn::make('mataPelajaran.nama_pelajaran')->label('Mata Pelajaran')->sortable(),
+                Tables\Columns\TextColumn::make('id_tema')->label('Tema ke-')->sortable(),
+                Tables\Columns\TextColumn::make('id_subtema')->label('Subtema ke-')->sortable(),
                 Tables\Columns\TextColumn::make('tema')->label('Tema'),
                 Tables\Columns\TextColumn::make('sub_tema')->label('Sub Tema'),
             ])

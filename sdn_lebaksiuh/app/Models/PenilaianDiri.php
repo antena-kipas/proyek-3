@@ -13,10 +13,8 @@ class PenilaianDiri extends Model
     protected $table = 'penilaian_diris';
 
     protected $fillable = [
-        'mata_pelajaran_id',
         'silabus_id',
-        'pertanyaan',
-        'jawaban',
+        'penilaian_diri',
     ];
 
     public function mataPelajaran(): BelongsTo

@@ -88,4 +88,95 @@ class GeminiAIService
         }
         return $activities;
     }
+
+    public function generateSilabusDetails(array $konteks): ?array
+    {
+        // Clean up context for a cleaner prompt
+        $promptContext = [
+            'kelas' => $konteks['kelas'],
+            'semester' => $konteks['semester'],
+            'tema' => $konteks['tema'],
+            'sub_tema' => $konteks['sub_tema'],
+            'mata_pelajaran' => \App\Models\MataPelajaran::find($konteks['mata_pelajaran_id'])->nama_pelajaran ?? 'N/A',
+            'kompetensi_inti' => array_map(fn($ki) => $ki['kompetensi_inti'], $konteks['kompetensi_intis']),
+            'kompetensi_dasar' => array_map(fn($kd) => $kd['deskripsi_kd'], $konteks['kompetensi_dasars']),
+            'indikator' => array_map(fn($ind) => $ind['deskripsi_indikator'], $konteks['indikators']),
+        ];
+
+        $konteksJson = json_encode($promptContext, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        $prompt = <<<PROMPT
+PERINTAH TEGAS: Anda adalah seorang ahli dalam kurikulum pendidikan dasar di Indonesia.
+TUGAS UTAMA: Berdasarkan konteks silabus yang diberikan, buatkan detail rincian silabus.
+
+KONTEKS SILABUS:
+```json
+$konteksJson
+```
+
+ATURAN WAJIB:
+1.  Buatkan detail untuk 3 (TIGA) bagian berikut: `materi_pelajaran`, `kegiatan_pembelajaran`, dan `penilaian_diri`.
+2.  Sajikan output **HANYA** dalam format JSON yang valid dan lengkap, sesuai dengan struktur di bawah ini. Jangan ada teks pembuka, penutup, atau penjelasan lain di luar JSON.
+3.  Setiap bagian harus berupa array of strings.
+4.  Untuk `materi_pelajaran`, buat minimal 2 item.
+5.  Untuk `kegiatan_pembelajaran`, buat minimal 3 item.
+6.  Untuk `penilaian_diri`, buat minimal 2 item (pertanyaan reflektif untuk siswa).
+
+STRUKTUR JSON YANG WAJIB DIIKUTI:
+{
+  "materi_pelajaran": [
+    "Isi lengkap materi pelajaran 1...",
+    "Isi lengkap materi pelajaran 2..."
+  ],
+  "kegiatan_pembelajaran": [
+    "Deskripsi lengkap kegiatan pembelajaran 1...",
+    "Deskripsi lengkap kegiatan pembelajaran 2...",
+    "Deskripsi lengkap kegiatan pembelajaran 3..."
+  ],
+  "penilaian_diri": [
+    "Pertanyaan reflektif untuk penilaian diri siswa 1?",
+    "Pertanyaan reflektif untuk penilaian diri siswa 2?"
+  ]
+}
+PROMPT;
+
+        try {
+            $response = $this->client->generativeModel('gemini-2.5-flash')->generateContent($prompt);
+            $jsonString = $this->extractJson($response->text());
+            $decoded = json_decode($jsonString, true);
+
+            if (!$decoded) {
+                return null;
+            }
+
+            // Transform the data for Filament Repeaters
+            $transformed = [];
+            $keys = ['materi_pelajaran', 'kegiatan_pembelajaran', 'penilaian_diri'];
+
+            foreach ($keys as $key) {
+                if (isset($decoded[$key])) {
+                    $transformed[$key] = array_map(function ($item) use ($key) {
+                        return [$key => $item];
+                    }, $decoded[$key]);
+                }
+            }
+
+            return $transformed;
+
+        } catch (\Exception $e) {
+            // Log the error or handle it as needed
+            \Illuminate\Support\Facades\Log::error('Gemini AI Service Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    private function extractJson(string $text): ?string
+    {
+        $start = strpos($text, '{');
+        $end = strrpos($text, '}');
+        if ($start === false || $end === false) {
+            return null;
+        }
+        return substr($text, $start, $end - $start + 1);
+    }
 }

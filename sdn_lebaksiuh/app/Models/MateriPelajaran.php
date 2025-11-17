@@ -11,10 +11,8 @@ class MateriPelajaran extends Model
     use HasFactory;
 
     protected $fillable = [
-        'mata_pelajaran_id',
         'silabus_id',
-        'judul',
-        'konten',
+        'materi_pelajaran',
     ];
 
     public function mataPelajaran(): BelongsTo

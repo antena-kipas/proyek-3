@@ -12,14 +12,25 @@ class Silabus extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'tema',
         'id_tema',
-        'subtema',
+        'sub_tema',
         'id_subtema',
         'semester',
         'mata_pelajaran_id',
         'kelas',
     ];
+
+    protected $casts = [
+        'id_tema' => 'integer',
+        'id_subtema' => 'integer',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function kompetensiIntis(): HasMany
     {
@@ -39,5 +50,20 @@ class Silabus extends Model
     public function indikators(): HasMany
     {
         return $this->hasMany(Indikator::class);
+    }
+
+    public function materiPelajaran(): HasMany
+    {
+        return $this->hasMany(MateriPelajaran::class);
+    }
+
+    public function kegiatanPembelajaran(): HasMany
+    {
+        return $this->hasMany(KegiatanPembelajaran::class);
+    }
+
+    public function penilaianDiri(): HasMany
+    {
+        return $this->hasMany(PenilaianDiri::class);
     }
 }

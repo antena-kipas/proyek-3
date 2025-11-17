@@ -1,11 +1,11 @@
 ## To Do
 
-- 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
 - 5. membuat funsi backup seperti pada bagian rpp
 - 6. pastikan semua user berfungsi, dalam sistem mempunyai 2 kategori user dimana masing masing memiliki role yang berbeda.
 
 ## Doing
 
+- 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
 
 ## Done
 
