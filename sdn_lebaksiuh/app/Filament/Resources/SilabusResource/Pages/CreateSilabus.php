@@ -54,6 +54,14 @@ class CreateSilabus extends CreateRecord
         // Create and associate related records
         foreach ($relationshipData as $relationship => $items) {
             if (!empty($items)) {
+                if ($relationship === 'kompetensiIntis') {
+                    $processedItems = [];
+                    foreach (array_values($items) as $key => $item) {
+                        $item['urutan'] = $key + 1;
+                        $processedItems[] = $item;
+                    }
+                    $items = $processedItems;
+                }
                 $silabus->{$relationship}()->createMany($items);
             }
         }

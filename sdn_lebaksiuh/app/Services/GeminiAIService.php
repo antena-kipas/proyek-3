@@ -96,7 +96,7 @@ class GeminiAIService
             'kelas' => $konteks['kelas'],
             'semester' => $konteks['semester'],
             'tema' => $konteks['tema'],
-            'sub_tema' => $konteks['sub_tema'],
+            'subtema' => $konteks['subtema'],
             'mata_pelajaran' => \App\Models\MataPelajaran::find($konteks['mata_pelajaran_id'])->nama_pelajaran ?? 'N/A',
             'kompetensi_inti' => array_map(fn($ki) => $ki['kompetensi_inti'], $konteks['kompetensi_intis']),
             'kompetensi_dasar' => array_map(fn($kd) => $kd['deskripsi_kd'], $konteks['kompetensi_dasars']),

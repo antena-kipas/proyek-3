@@ -52,14 +52,13 @@ class SilabusForm
                     ->label('Judul Buku tematik!')
                     ->required(),
 
-                TextInput::make('sub_tema')
+                TextInput::make('subtema')
                     ->label('judul bab / nama bab')
                     ->required(),
 
                 \Filament\Forms\Components\Repeater::make('kompetensiIntis')
                     ->relationship()
                     ->schema([
-                        \Filament\Forms\Components\TextInput::make('urutan')->numeric()->required(),
                         \Filament\Forms\Components\Textarea::make('kompetensi_inti')->required(),
                     ])
                     ->label('Kompetensi Inti')
@@ -101,6 +100,13 @@ class SilabusForm
                             ->label('Deskripsi Kompetensi Dasar')
                             ->required(),
                     ])
+                    ->dehydrateStateUsing(function (array $state, Get $get): array {
+                        $mataPelajaranId = $get('mata_pelajaran_id');
+                        foreach ($state as $key => $item) {
+                            $state[$key]['mata_pelajaran_id'] = $mataPelajaranId;
+                        }
+                        return $state;
+                    })
                     ->label('Kompetensi Dasar')
                     ->addActionLabel('Tambah Kompetensi Dasar')
                     ->columns(1)
@@ -117,6 +123,13 @@ class SilabusForm
                             ->label('Deskripsi Indikator')
                             ->required(),
                     ])
+                    ->dehydrateStateUsing(function (array $state, Get $get): array {
+                        $mataPelajaranId = $get('mata_pelajaran_id');
+                        foreach ($state as $key => $item) {
+                            $state[$key]['mata_pelajaran_id'] = $mataPelajaranId;
+                        }
+                        return $state;
+                    })
                     ->label('Indikator')
                     ->addActionLabel('Tambah Indikator')
                     ->columns(1)
@@ -137,7 +150,7 @@ class SilabusForm
                                 'kelas' => $get('kelas'),
                                 'semester' => $get('semester'),
                                 'tema' => $get('tema'),
-                                'sub_tema' => $get('sub_tema'),
+                                'subtema' => $get('subtema'),
                                 'mata_pelajaran_id' => $get('mata_pelajaran_id'),
                                 'kompetensi_intis' => $get('kompetensiIntis'),
                                 'kompetensi_dasars' => $get('kompetensiDasars'),

@@ -6,6 +6,10 @@
 ## Doing
 
 - 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
+    > .
+    * [ ] mengecek apakah tombol generate berjalan atau tidak,
+    * [ ] mengecek apakah tombol simpan berjalan
+    * [ ] membuat tombol download silabus
 
 ## Done
 

@@ -15,7 +15,7 @@ class Silabus extends Model
         'user_id',
         'tema',
         'id_tema',
-        'sub_tema',
+        'subtema',
         'id_subtema',
         'semester',
         'mata_pelajaran_id',

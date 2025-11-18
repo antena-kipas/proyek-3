@@ -12,7 +12,6 @@ class KompetensiInti extends Model
 
     protected $fillable = [
         'silabus_id',
-        'urutan',
         'kompetensi_inti',
     ];
 
