@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 class CreateSilabus extends CreateRecord
 {
     protected static string $resource = SilabusResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     protected function getFormActions(): array
     {

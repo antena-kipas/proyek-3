@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Indikator extends Model
 {
-    protected $fillable = ['mata_pelajaran_id', 'deskripsi_indikator', 'silabus_id'];
+    protected $fillable = ['mata_pelajaran_id', 'deskripsi_indikator', 'silabus_id', 'mata_pelajaran_id',];
 
     public function mataPelajaran(): BelongsTo
     {

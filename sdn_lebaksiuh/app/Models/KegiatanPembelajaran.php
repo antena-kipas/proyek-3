@@ -13,6 +13,7 @@ class KegiatanPembelajaran extends Model
     protected $fillable = [
         'silabus_id',
         'kegiatan_pembelajaran',
+        'mata_pelajaran_id',
     ];
 
     public function mataPelajaran(): BelongsTo

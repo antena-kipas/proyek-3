@@ -15,6 +15,7 @@ class PenilaianDiri extends Model
     protected $fillable = [
         'silabus_id',
         'penilaian_diri',
+        'mata_pelajaran_id',
     ];
 
     public function mataPelajaran(): BelongsTo
