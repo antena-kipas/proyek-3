@@ -5,11 +5,6 @@
 
 ## Doing
 
-- 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
-    > .
-    * [x] mengecek apakah tombol generate berjalan atau tidak,
-    * [x] mengecek apakah tombol simpan berjalan
-    * [ ] membuat tombol download silabus
 
 ## Done
 
@@ -23,3 +18,7 @@
     * [x] adding kolom kelas pada tabel silabuses
     * [x] fixing relasi pada tabel indikators
 - 3. membuat template silabus
+- 4. membuat controller untuk berhubungan dengan gemini supaya bisa membuat data silabus
+    * [x] mengecek apakah tombol generate berjalan atau tidak,
+    * [x] mengecek apakah tombol simpan berjalan
+    * [x] membuat tombol download silabus

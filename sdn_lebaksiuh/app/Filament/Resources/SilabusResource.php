@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 
 class SilabusResource extends Resource
 {
@@ -37,6 +38,11 @@ class SilabusResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('unduh')
+                    ->label('Unduh')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Silabus $record) => route('silabus.download', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
