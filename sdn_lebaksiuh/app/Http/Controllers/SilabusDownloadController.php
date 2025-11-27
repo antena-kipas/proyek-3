@@ -45,7 +45,7 @@ class SilabusDownloadController extends Controller
 
             // Process blocks
             $this->cloneBlock($templateProcessor, 'kompotensi_inti_block', $silabus->kompetensiIntis, function($item, $index) {
-                return ['urutan' => $index + 1, 'konten_kompetensi_inti' => $item->kompetensi_inti];
+                return ['konten_kompetensi_inti' => $item->kompetensi_inti];
             });
 
             $this->cloneBlock($templateProcessor, 'kompetensi_dasar_block', $silabus->kompetensiDasars, function($item) {

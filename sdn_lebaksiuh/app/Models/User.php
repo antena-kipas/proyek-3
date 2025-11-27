@@ -25,10 +25,6 @@ class User extends Authenticatable
         'mapel',
         'email',
         'password',
-        'google_access_token',
-        'google_refresh_token',
-        'google_token_expires_at',
-        'google_email',
     ];
 
     /**
@@ -51,7 +47,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'google_token_expires_at' => 'datetime',
         ];
     }
 

@@ -47,7 +47,7 @@ class RppResource extends Resource
                     ->label('Backup')
                     ->icon('heroicon-o-archive-box')
                     ->color('info')
-                    ->requiresConfirmation()
+                    // ->requiresConfirmation()
                     ->action(function (Rpp $record) {
                         try {
                             \App\Jobs\BackupRppToGoogleDrive::dispatch($record, auth()->user());

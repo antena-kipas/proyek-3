@@ -22,5 +22,6 @@ yarn-error.log
 /.vscode
 /.zed
 pkey-gservice-sdn-lebaksiuh_gdrive.json
+storage/google-credentials.json
 
-sdn_lebaksiuh/storage/*.json
+

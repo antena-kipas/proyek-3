@@ -1,7 +1,10 @@
 ## To Do
 
-- 5. membuat funsi backup seperti pada bagian rpp
-- 6. pastikan semua user berfungsi, dalam sistem mempunyai 2 kategori user dimana masing masing memiliki role yang berbeda.
+- 7. membuat tabel kelas
+- 8. membuat seedeer untuk tbael kelas
+- 9. membuat template absensi
+- 10. membuat tampilan halaman absensi untuk user guru
+- 11. Membuat tampilan halaman  absensi untuk user admin
 
 ## Doing
 
@@ -22,3 +25,4 @@
     * [x] mengecek apakah tombol generate berjalan atau tidak,
     * [x] mengecek apakah tombol simpan berjalan
     * [x] membuat tombol download silabus
+- 5. membuat funsi  backup silabus  seperti pada bagian rpp

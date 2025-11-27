@@ -5,9 +5,6 @@ namespace App\Jobs;
 use App\Models\Rpp;
 use App\Models\User;
 use Filament\Notifications\Notification;
-use Google_Client;
-use Google_Service_Drive;
-use Google_Service_Drive_DriveFile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,54 +34,59 @@ class BackupRppToGoogleDrive implements ShouldQueue
     {
         Log::info('BackupRppToGoogleDrive job started for RPP ID: ' . $this->rpp->id . ' by User ID: ' . $this->user->id);
         try {
-            // Generate DOCX file and get its path and standardized name
-            list($tempFilePath, $fileName) = $this->generateDocx();
+            // 1. Generate DOCX Local
+            list($localTempPath, $fileName) = $this->generateDocx();
+            $content = Storage::disk('local')->get($localTempPath);
 
-            // Setup Google Client and Service
-            $client = $this->setupGoogleClient();
-            $driveService = new Google_Service_Drive($client);
+            $googleDisk = Storage::disk('google');
 
-            // Check if file already exists in Google Drive
-            if ($this->fileExistsInDrive($fileName, $driveService)) {
-                // If exists, skip upload and delete local file
+            // 2. Cek Eksistensi di Google Drive (Folder Target)
+            if ($googleDisk->exists($fileName)) {
                 Log::info('File "' . $fileName . '" already exists in Google Drive. Skipping upload.');
-                Storage::disk('local')->delete($tempFilePath);
 
                 Notification::make()
                     ->title('Backup Dilewati')
                     ->body('RPP \'' . $this->rpp->tema_name . '\' sudah ada di Google Drive.')
                     ->info()
                     ->sendToDatabase($this->user);
-
             } else {
-                // If not exists, upload to Google Drive
-                Log::info('File "' . $fileName . '" not found in Google Drive. Proceeding with upload.');
-                $fileId = $this->uploadToDrive($tempFilePath, $fileName, $driveService);
-
-                // Save the Google Drive file ID to the RPP record
-                Rpp::where('id', $this->rpp->id)->update(['google_drive_file_id' => $fileId]);
-                Log::info('Google Drive File ID ' . $fileId . ' saved for RPP ID: ' . $this->rpp->id);
-
-                // Delete temporary file
-                Storage::disk('local')->delete($tempFilePath);
-                Log::info('Temporary file deleted: ' . $tempFilePath);
+                // 3. Upload ke Google Drive
+                // (Otomatis masuk ke folder 1AGG... karena konfigurasi AppServiceProvider)
+                Log::info('File "' . $fileName . '" not found. Uploading...');
+                
+                $googleDisk->put($fileName, $content);
+                
+                Log::info('Successfully uploaded "' . $fileName . '" to Google Drive.');
 
                 Notification::make()
                     ->title('Backup Berhasil')
                     ->body('RPP \'' . $this->rpp->tema_name . '\' berhasil di-backup ke Google Drive.')
                     ->success()
                     ->sendToDatabase($this->user);
+                
+                // Opsional: Update status di DB lokal jika perlu
+                // $this->rpp->update(['last_backup_at' => now()]);
             }
 
-            Log::info('BackupRppToGoogleDrive job finished successfully for RPP ID: ' . $this->rpp->id);
+            // 4. Bersihkan File Temp Lokal
+            Storage::disk('local')->delete($localTempPath);
+            Log::info('Temporary file deleted: ' . $localTempPath);
+            Log::info('Job finished successfully for RPP ID: ' . $this->rpp->id);
 
         } catch (Throwable $e) {
-            Log::error('An error occurred in BackupRppToGoogleDrive job: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Backup Error: ' . $e->getMessage(), ['exception' => $e]);
+            
             Notification::make()
                 ->title('Backup Gagal')
-                ->body('Terjadi kesalahan saat mem-backup RPP \'' . $this->rpp->tema_name . '\'.')
+                ->body('Terjadi kesalahan saat mem-backup RPP.')
                 ->danger()
                 ->sendToDatabase($this->user);
+            
+            // Hapus file temp jika error terjadi setelah generate
+            if (isset($localTempPath) && Storage::disk('local')->exists($localTempPath)) {
+                Storage::disk('local')->delete($localTempPath);
+            }
+            
             report($e);
         }
     }
@@ -101,125 +103,58 @@ class BackupRppToGoogleDrive implements ShouldQueue
 
         $templateProcessor = new TemplateProcessor($templatePath);
 
-        // Fill template (existing logic)
-        $templateProcessor->setValue('kelas', $rpp->user->kelas);
+        // Fill template simple values
+        $templateProcessor->setValue('kelas', $rpp->user->kelas ?? '-');
         $templateProcessor->setValue('semester', $rpp->semester);
         $templateProcessor->setValue('tema_name', $rpp->tema_name);
         $templateProcessor->setValue('sub_tema', $rpp->sub_tema_name);
         $templateProcessor->setValue('pembelajaran_ke', $rpp->pembelajaran_ke);
         $templateProcessor->setValue('tanggal', now()->format('d F Y'));
         $templateProcessor->setValue('user_name', $rpp->user->name);
+
+        // Fill array values
         $muatanTerpaduNames = $rpp->muatan_terpadus->pluck('mata_pelajaran')->toArray();
         $templateProcessor->setValue('daftar_nama_pelajaran', implode(', ', $muatanTerpaduNames));
+
+        // Block cloning for Tujuan Pembelajaran
         $tujuanPembelajaranData = [];
         foreach ($rpp->tujuanPembelajarans as $index => $tujuan) {
             $tujuanPembelajaranData[] = ['urutan' => $index + 1, 'konten_tujuan' => $tujuan->tujuan_pembelajaran];
         }
         $templateProcessor->cloneBlock('tujuan_pembelajaran_block', count($tujuanPembelajaranData), true, false, $tujuanPembelajaranData);
+
+        // Block cloning for Kegiatan Inti
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_mengamati', 'ayo_mengamati_block', 'urutan_ayo_mengamati', 'konten_mengamati');
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_berdiskusi', 'ayo_berdiskusi_block', 'urutan_ayo_berdiskusi', 'konten_berdiskusi');
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_membaca', 'ayo_membaca_block', 'urutan_ayo_membaca', 'konten_membaca');
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_berlatih', 'ayo_berlatih_block', 'urutan_ayo_berlatih', 'konten_berlatih');
         $this->processKegiatanIntiBlock($templateProcessor, $rpp->kegiatan_intis, 'ayo_renungkan', 'ayo_renungkan_block', 'urutan_ayo_renungkan', 'konten_renungkan');
 
-        // Sanitize parts of the filename by replacing spaces with underscores
+        // Filename standardization
         $safeSubTema = str_replace(' ', '_', $rpp->sub_tema_name);
         $safePembelajaran = str_replace(' ', '_', $rpp->pembelajaran_ke);
-
-        // Create the new standardized filename
         $fileName = 'RPP_' . $rpp->id . '_' . $safeSubTema . '_' . $safePembelajaran . '.docx';
 
+        // Save to temp
         $tempDir = 'temp_backups';
         Storage::disk('local')->makeDirectory($tempDir);
         $tempFilePath = $tempDir . '/' . $fileName;
         $fullTempPath = Storage::disk('local')->path($tempFilePath);
+        
         $templateProcessor->saveAs($fullTempPath);
         Log::info('Temporary file created at: ' . $fullTempPath);
 
         return [$tempFilePath, $fileName];
     }
-
-    private function setupGoogleClient(): Google_Client
-    {
-        $client = new Google_Client();
-        $client->setClientId(config('services.google.client_id'));
-        $client->setClientSecret(config('services.google.client_secret'));
-        $client->setRedirectUri(config('services.google.redirect'));
-        $client->setAccessType('offline');
-
-        // Set the user's token
-        $accessToken = [
-            'access_token' => $this->user->google_access_token,
-            'refresh_token' => $this->user->google_refresh_token,
-            'expires_in' => $this->user->google_token_expires_at->getTimestamp() - time(),
-        ];
-        $client->setAccessToken($accessToken);
-
-        // Refresh the token if it's expired
-        if ($client->isAccessTokenExpired()) {
-            Log::info('Google Access Token is expired. Refreshing...');
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $newAccessToken = $client->getAccessToken();
-
-            // Update the user's record with the new token
-            $this->user->update([
-                'google_access_token' => $newAccessToken['access_token'],
-                'google_token_expires_at' => now()->addSeconds($newAccessToken['expires_in']),
-            ]);
-            Log::info('Google Access Token refreshed and updated for User ID: ' . $this->user->id);
-        }
-        
-        return $client;
-    }
-
-    private function fileExistsInDrive(string $fileName, Google_Service_Drive $driveService): bool
-    {
-        $folderId = env('GOOGLE_DRIVE_FOLDER_ID');
-        // Use addslashes to escape single quotes in the filename
-        $query = "name = '" . addslashes($fileName) . "' and '" . $folderId . "' in parents and trashed = false";
-
-        $optParams = [
-            'q' => $query,
-            'fields' => 'files(id)',
-            'pageSize' => 1
-        ];
-
-        try {
-            $results = $driveService->files->listFiles($optParams);
-            return count($results->getFiles()) > 0;
-        } catch (Throwable $e) {
-            Log::error('Error checking file existence in Google Drive: ' . $e->getMessage());
-            // If we can't check, assume it doesn't exist to allow backup attempt
-            return false;
-        }
-    }
-
-    private function uploadToDrive(string $tempFilePath, string $fileName, Google_Service_Drive $driveService): string
-    {
-        $fileMetadata = new Google_Service_Drive_DriveFile([
-            'name' => $fileName,
-            'parents' => [env('GOOGLE_DRIVE_FOLDER_ID')]
-        ]);
-
-        $content = Storage::disk('local')->get($tempFilePath);
-        $createdFile = $driveService->files->create($fileMetadata, [
-            'data' => $content,
-            'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'uploadType' => 'multipart',
-            'fields' => 'id'
-        ]);
-
-        Log::info('Successfully uploaded to Google Drive. File ID: ' . $createdFile->id);
-        return $createdFile->id;
-    }
-
+    
     private function processKegiatanIntiBlock(TemplateProcessor $templateProcessor, $kegiatanIntis, string $kelompokName, string $blockName, string $urutanPlaceholder, string $kontenPlaceholder): void
     {
         $filteredActivities = $kegiatanIntis->where('kelompok', $kelompokName);
         $data = [];
-        foreach ($filteredActivities as $index => $activity) {
+        $i = 1;
+        foreach ($filteredActivities as $activity) {
             $data[] = [
-                $urutanPlaceholder => $index + 1,
+                $urutanPlaceholder => $i++,
                 $kontenPlaceholder => $activity->konten,
             ];
         }
@@ -227,7 +162,7 @@ class BackupRppToGoogleDrive implements ShouldQueue
         if (!empty($data)) {
             $templateProcessor->cloneBlock($blockName, 0, true, false, $data);
         } else {
-            $templateProcessor->cloneBlock($blockName, 0, true, true);
+            $templateProcessor->deleteBlock($blockName);
         }
     }
 }
