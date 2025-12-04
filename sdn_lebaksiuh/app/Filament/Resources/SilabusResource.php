@@ -18,6 +18,21 @@ class SilabusResource extends Resource
     protected static ?string $model = Silabus::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Silabus';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Silabus';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Silabus';
+    }
     
         public static function form(Form $form): Form
         {
@@ -77,7 +92,7 @@ class SilabusResource extends Resource
         public static function getPages(): array
         {
             return [
-                'index' => Pages\ListSilabuses::route('/'),
+                'index' => Pages\ListSilabus::route('/'),
                 'create' => Pages\CreateSilabus::route('/create'),
                 'edit' => Pages\EditSilabus::route('/{record}/edit'),
             ];

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Rpps;
+namespace App\Filament\Resources\RPP;
 
-use App\Filament\Resources\Rpps\Pages\CreateRpp;
-use App\Filament\Resources\Rpps\Pages\EditRpp;
-use App\Filament\Resources\Rpps\Pages\ListRpps;
-use App\Filament\Resources\Rpps\Schemas\RppForm;
+use App\Filament\Resources\RPP\Pages\CreateRpp;
+use App\Filament\Resources\RPP\Pages\EditRpp;
+use App\Filament\Resources\RPP\Pages\ListRPP;
+use App\Filament\Resources\RPP\Schemas\RppForm;
 use App\Models\Rpp;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,6 +19,21 @@ class RppResource extends Resource
     protected static ?string $model = Rpp::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'RPP';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'RPP';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'RPP';
+    }
 
     public static function form(Form $form): Form
     {
@@ -41,7 +56,7 @@ class RppResource extends Resource
                 Action::make('unduh')
                     ->label('Unduh')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Rpp $record): string => route('rpps.download', $record))
+                    ->url(fn (Rpp $record): string => route('rpp.download', $record))
                     ->openUrlInNewTab(),
                 Action::make('backup')
                     ->label('Backup')
@@ -81,7 +96,7 @@ class RppResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListRpps::route('/'),
+            'index' => Pages\ListRPP::route('/'),
             'create' => CreateRpp::route('/create'),
             'edit' => EditRpp::route('/{record}/edit'),
         ];

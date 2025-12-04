@@ -6,7 +6,7 @@ use App\Filament\Resources\SilabusResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
 
-class ManageSilabuses extends ManageRecords
+class ManageSilabus extends ManageRecords
 {
     protected static string $resource = SilabusResource::class;
 

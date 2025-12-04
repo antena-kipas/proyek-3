@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Rpps\Pages;
+namespace App\Filament\Resources\RPP\Pages;
 
-use App\Filament\Resources\Rpps\RppResource;
+use App\Filament\Resources\RPP\RppResource;
 use Filament\Actions\Action; // Import kelas Action
 use Filament\Resources\Pages\CreateRecord;
 

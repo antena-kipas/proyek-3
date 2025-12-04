@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Rpps\Tables;
+namespace App\Filament\Resources\RPP\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 
-class RppsTable
+class RPPTable
 {
     public static function configure(Table $table): Table
     {

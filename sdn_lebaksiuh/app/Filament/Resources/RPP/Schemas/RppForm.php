@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Rpps\Schemas;
+namespace App\Filament\Resources\RPP\Schemas;
 
 use App\Services\GeminiAIService;
 use Filament\Forms\Components\Actions;

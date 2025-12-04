@@ -18,6 +18,7 @@
         "league/oauth2-google": "^4.0",
         "livewire/volt": "^1.7.0",
         "masbug/flysystem-google-drive-ext": "^2.4",
+        "phpoffice/phpspreadsheet": "^5.3",
         "phpoffice/phpword": "^1.4",
         "socialiteproviders/google": "^4.1"
     },

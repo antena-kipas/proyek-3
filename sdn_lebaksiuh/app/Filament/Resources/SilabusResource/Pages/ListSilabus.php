@@ -6,7 +6,7 @@ use App\Filament\Resources\SilabusResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListSilabuses extends ListRecords
+class ListSilabus extends ListRecords
 {
     protected static string $resource = SilabusResource::class;
 

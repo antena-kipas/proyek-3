@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Rpps\Pages;
+namespace App\Filament\Resources\RPP\Pages;
 
-use App\Filament\Resources\Rpps\RppResource;
+use App\Filament\Resources\RPP\RppResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListRpps extends ListRecords
+class ListRPP extends ListRecords
 {
     protected static string $resource = RppResource::class;
 
