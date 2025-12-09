@@ -14,9 +14,6 @@ export type RootStackParamList = {
   Absensi: undefined;
   BuatAbsensi: undefined;
   RekapAbsensi: undefined;
-  TambahMurid: undefined;
-  DokumenAbsensi: undefined;
-  HapusMurid: undefined;
 };
 
 // Ekspor tipe props untuk setiap layar agar mudah digunakan di komponen lain

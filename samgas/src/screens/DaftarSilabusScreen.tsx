@@ -1,60 +1,40 @@
-import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { StyleSheet, View, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Text, Icon, TextInput } from 'react-native-paper';
+import { Text, Icon, TextInput, Button } from 'react-native-paper';
 import { RootStackParamList } from '../navigation/types';
 import BottomNavBar from '../components/BottomNavBar';
-import ConfirmationModal from '../components/ConfirmationModal';
+import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
 type DaftarSilabusScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DaftarSilabus'>;
 
-// --- DUMMY DATA ---
-const silabusData = [
-  {
-    id: 1,
-    judul_buku_tematik: 'Aku Anak Hebat',
-    subtema: 'mandiri',
-    semester: 2
-  },
-  {
-    id: 2,
-    judul_buku_tematik: 'Aku Anak Hebat',
-    subtema: 'mandiri',
-    semester: 2
-  },
-];
-
-const user = {
-    nama: 'JAMAL',
-    kelas: 'XXII'
-};
-
 // --- KOMPONEN ---
 
-const Header = ({ onBackPress }: { onBackPress: () => void }) => (
+const Header = ({ onBackPress, userNama, userKelas }: { onBackPress: () => void; userNama: string; userKelas: string; }) => (
   <View style={styles.header}>
     <View style={styles.headerTop}>
       <TouchableOpacity onPress={onBackPress}>
         <Icon source="arrow-left" size={28} color="#FFFFFF" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Daftar silabus</Text>
+      <Text style={styles.headerTitle}>Daftar Silabus</Text>
       <View style={{ width: 28 }} />
     </View>
-    <UserInfo />
+    <UserInfo nama={userNama} kelas={userKelas} />
   </View>
 );
 
-const UserInfo = () => (
+const UserInfo = ({ nama, kelas }: { nama: string; kelas: string; }) => (
     <View style={styles.userInfo}>
         <View>
             <Text style={styles.userInfoText}>Nama    : </Text>
-            <Text style={styles.userInfoText}>Kelas   :</Text>
+            <Text style={styles.userInfoText}>Kelas      :</Text>
         </View>
         <View>
-            <Text style={styles.userInfoText}>{user.nama}</Text>
-            <Text style={styles.userInfoText}>{user.kelas}</Text>
+            <Text style={styles.userInfoText}>{nama}</Text>
+            <Text style={styles.userInfoText}>{kelas}</Text>
         </View>
     </View>
 );
@@ -75,34 +55,24 @@ const SearchBar = () => {
   );
 };
 
-const SilabusItem = ({
-  item,
-  isLastItem,
-  onDownload,
-  onDelete
-}: {
-  item: typeof silabusData[0],
-  isLastItem: boolean,
-  onDownload: (item: any) => void,
-  onDelete: (item: any) => void
-}) => (
-  <View>
-    <View style={styles.silabusItem}>
-      <View style={styles.silabusHeader}>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => onDownload(item)}>
-            <Icon source="download-outline" size={24} color="#007AFF" />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => onDelete(item)}>
-            <Icon source="trash-can-outline" size={24} color="#FF3B30" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Text style={styles.silabusDetail}>Judul Buku: {item.judul_buku_tematik}</Text>
-      <Text style={styles.silabusDetail}>Subtema: {item.subtema}</Text>
-      <Text style={styles.silabusDetail}>Semester: {item.semester}</Text>
-    </View>
-    {!isLastItem && <View style={styles.separator} />}
+// Interface untuk struktur Silabus dari backend
+interface SilabusItemData {
+  id: number;
+  tema: string;
+  subtema: string;
+  semester: string;
+  kelas: string;
+  mata_pelajaran: {
+    nama_pelajaran: string;
+  } | null;
+}
+
+const SilabusItem = ({ item }: { item: SilabusItemData }) => (
+  <View style={styles.silabusItem}>
+    <Text style={styles.silabusSubject}>{item.mata_pelajaran?.nama_pelajaran ?? 'Tanpa Mapel'}</Text>
+    <Text style={styles.silabusDetail}>Tema: {item.tema}</Text>
+    <Text style={styles.silabusDetail}>Subtema: {item.subtema}</Text>
+    <Text style={styles.silabusDetail}>Kelas: {item.kelas} / Semester: {item.semester}</Text>
   </View>
 );
 
@@ -110,182 +80,195 @@ const SilabusItem = ({
 
 const DaftarSilabusScreen = () => {
   const navigation = useNavigation<DaftarSilabusScreenNavigationProp>();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalAction, setModalAction] = useState<'download' | 'delete' | null>(null);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [modalStatus, setModalStatus] = useState<'confirm' | 'loading' | 'success' | 'error'>('confirm');
+  const { userToken, userInfo } = useContext(AuthContext);
 
-  const handleDownload = (item: any) => {
-    setSelectedItem(item);
-    setModalAction('download');
-    setModalStatus('confirm');
-    setModalVisible(true);
-  };
+  const [silabusList, setSilabusList] = useState<SilabusItemData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDelete = (item: any) => {
-    setSelectedItem(item);
-    setModalAction('delete');
-    setModalStatus('confirm');
-    setModalVisible(true);
-  };
-
-  const handleConfirm = () => {
-    setModalStatus('loading');
-    setTimeout(() => {
-      const isSuccess = Math.random() < 0.5;
-      if (isSuccess) {
-        setModalStatus('success');
-      } else {
-        setModalStatus('error');
-      }
-    }, 2000);
-  };
-
-  const handleClose = () => {
-    setModalVisible(false);
-    setTimeout(() => {
-        setSelectedItem(null);
-        setModalAction(null);
-        setModalStatus('confirm');
-    }, 300);
-  };
-
-  const modalStrings = useMemo(() => {
-    if (!selectedItem) return { title: '', message: '', successMessage: '', errorMessage: '' };
-    const docName = `silabus "${selectedItem.judul_buku_tematik} - ${selectedItem.subtema}"`;
-    if (modalAction === 'download') {
-      return {
-        title: 'Konfirmasi Unduh',
-        message: `Apakah Anda yakin ingin mengunduh ${docName}?`,
-        successMessage: `${docName} BERHASIL diunduh.`,
-        errorMessage: `${docName} GAGAL diunduh.`,
-      };
+  const fetchSilabus = useCallback(async (refresh = false) => {
+    if (refresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
     }
-    if (modalAction === 'delete') {
-      return {
-        title: 'Konfirmasi Hapus',
-        message: `Apakah Anda yakin ingin menghapus ${docName}?`,
-        successMessage: `${docName} BERHASIL dihapus.`,
-        errorMessage: `${docName} GAGAL dihapus.`,
-      };
+    setError(null);
+    try {
+      const response = await axios.get('http://localhost:8000/api/silabus', {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      setSilabusList(response.data);
+    } catch (err: any) {
+      console.error('Failed to fetch silabus:', err);
+      setError('Gagal memuat daftar silabus. Coba lagi nanti.');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
     }
-    return { title: '', message: '', successMessage: '', errorMessage: '' };
-  }, [selectedItem, modalAction]);
+  }, [userToken]);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchSilabus();
+    }, [fetchSilabus])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} />
+      <Header onBackPress={() => navigation.goBack()} userNama={userInfo?.name ?? ''} userKelas={userInfo?.kelas?.toString() ?? ''} />
       <SearchBar />
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {silabusData.map((item, index) => (
-          <SilabusItem
-            key={item.id}
-            item={item}
-            isLastItem={index === silabusData.length - 1}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ScrollView>
-      <BottomNavBar />
-      {selectedItem && (
-        <ConfirmationModal
-          visible={modalVisible}
-          status={modalStatus}
-          onConfirm={modalStatus === 'confirm' ? handleConfirm : handleClose}
-          onCancel={handleClose}
-          onRetry={handleConfirm}
-          title={modalStrings.title}
-          message={modalStrings.message}
-          messageColor={modalAction === 'delete' && modalStatus === 'confirm' ? 'red' : 'black'}
-          successMessage={modalStrings.successMessage}
-          errorMessage={modalStrings.errorMessage}
-          documentType="Silabus"
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Button mode="outlined" onPress={() => fetchSilabus(false)}>Coba Lagi</Button>
+        </View>
+      ) : (
+        <FlatList
+          data={silabusList}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <SilabusItem item={item} />}
+          contentContainerStyle={styles.flatListContent}
+          onRefresh={() => fetchSilabus(true)}
+          refreshing={isRefreshing}
+          ListEmptyComponent={
+            <View style={styles.emptyListContainer}>
+              <Text style={styles.emptyListText}>Belum ada silabus yang dibuat.</Text>
+            </View>
+          }
         />
       )}
+      
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('BuatSilabus')}
+      >
+        <Icon source="plus" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      <BottomNavBar />
     </SafeAreaView>
   );
 };
 
-
 // --- STYLES ---
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F2F2F7',
-  },
-  // Header
-  header: {
-    backgroundColor: '#007AFF',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 15,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-  // User Info
-  userInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  userInfoText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  // Search
-  searchContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  searchInput: {
-    backgroundColor: '#FFFFFF',
-  },
-  // ScrollView
-  scrollViewContent: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 80, // Space for footer
-  },
-  // silabus Item
-  silabusItem: {
-    paddingVertical: 12,
-  },
-  silabusHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  silabusSubject: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-  iconContainer: {
-    flexDirection: 'row',
-  },
-  silabusDetail: {
-    fontSize: 14,
-    color: '#3C3C43',
-    marginBottom: 4,
-    lineHeight: 20,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#D1D1D6',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#F2F2F7',
+    },
+    header: {
+        backgroundColor: '#007AFF',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingHorizontal: 15,
+    },
+    headerTop: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+    },
+    userInfo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    userInfoText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        lineHeight: 22,
+    },
+    searchContainer: {
+        paddingHorizontal: 16,
+        paddingTop: 16,
+    },
+    searchInput: {
+        backgroundColor: '#FFFFFF',
+    },
+    flatListContent: {
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 80,
+    },
+    silabusItem: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 8,
+        padding: 15,
+        marginBottom: 10,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+    },
+    silabusSubject: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 8,
+    },
+    silabusDetail: {
+        fontSize: 14,
+        color: '#3C3C43',
+        marginBottom: 4,
+        lineHeight: 20,
+    },
+    loadingIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    emptyListContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        marginTop: 50,
+    },
+    emptyListText: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+    },
+    fab: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 20,
+        bottom: 90,
+        backgroundColor: '#007AFF',
+        borderRadius: 30,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+    },
 });
 
 export default DaftarSilabusScreen;

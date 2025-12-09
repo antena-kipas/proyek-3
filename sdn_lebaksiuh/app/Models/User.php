@@ -8,11 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use App\Models\AbsensiSiswa;
+use App\Models\Rpp;
+use App\Models\Silabus;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -60,11 +64,21 @@ class User extends Authenticatable
             ->explode(' ')
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
-                        ->implode('');
-                    }
-            
-                    public function absensi()
-                    {
-                        return $this->hasMany(AbsensiSiswa::class);
-                    }
-                }
+            ->implode('');
+    }
+
+    public function absensi(): HasMany
+    {
+        return $this->hasMany(AbsensiSiswa::class);
+    }
+
+    public function rpps(): HasMany
+    {
+        return $this->hasMany(Rpp::class);
+    }
+
+    public function silabuses(): HasMany
+    {
+        return $this->hasMany(Silabus::class);
+    }
+}

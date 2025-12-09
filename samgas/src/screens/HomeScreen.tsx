@@ -1,17 +1,31 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Text, Avatar } from 'react-native-paper';
 import BottomNavBar from '../components/BottomNavBar'; // Impor komponen
+import { AuthContext } from '../context/AuthContext'; // Impor AuthContext
 
 // Impor tipe props terpusat untuk layar ini
 import { HomeScreenProps } from '../navigation/types';
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
-  const menuItems = [
+  const { userInfo } = useContext(AuthContext);
+
+  const allMenuItems = [
     { id: 'rpp', label: 'RPP', icon: 'file-document-outline'},
     { id: 'silabus', label: 'SILABUS', icon: 'file-chart-outline'},
     { id: 'absensi', label: 'Absensi', icon: 'account-check-outline'},
   ];
+
+  // Tentukan apakah user adalah guru mapel
+  const isGuruMapel = userInfo?.role === 'guru' && userInfo?.mapel != null;
+
+  // Filter menu items berdasarkan role
+  const menuItems = allMenuItems.filter(item => {
+    if (item.id === 'absensi' && isGuruMapel) {
+      return false; // Jangan tampilkan Absensi untuk guru mapel
+    }
+    return true;
+  });
 
   return (
     <View style={styles.container}>

@@ -1,19 +1,23 @@
-
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import BottomNavBar from '../components/BottomNavBar';
+import { AuthContext } from '../context/AuthContext'; // Import Context
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Profile'>;
 
 const ProfileScreen = () => {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
+  
+  // PERBAIKAN 1: Ambil 'userInfo' dari Context
+  const { logout, userRole, userInfo } = useContext(AuthContext); 
 
   return (
     <View style={styles.container}>
+      {/* --- HEADER --- */}
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
             <View style={styles.headerIconContainer}>
@@ -25,33 +29,53 @@ const ProfileScreen = () => {
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
       </View>
+
+      {/* --- CONTENT --- */}
       <View style={styles.content}>
         <View style={styles.profileInfo}>
 
+            {/* PERBAIKAN 2: Tampilkan Nama Asli dari Database */}
             <View style={styles.infoBox}>
-                <Text style={styles.label}>Nama</Text>
+                <Text style={styles.label}>Nama Lengkap</Text>
                 <TextInput
-                style={styles.input}
-                value="nama guru"
-                editable={false}
+                  style={styles.input}
+                  // Jika userInfo ada, tampilkan namanya. Jika loading, tulis Memuat...
+                  value={userInfo ? userInfo.name : "Memuat Data..."} 
+                  editable={false}
                 />
             </View>
-            <View style={styles.infoBox}>
-                <Text style={styles.label}>Kelas</Text>
+
+            {/* Bagian Email (Opsional, tapi bagus ditampilkan) */}
+             <View style={styles.infoBox}>
+                <Text style={styles.label}>Email</Text>
                 <TextInput
-                style={styles.input}
-                value="Guru Mapel"
-                editable={false}
+                  style={styles.input}
+                  value={userInfo ? userInfo.email : "-"} 
+                  editable={false}
                 />
             </View>
+
+            {/* Form Role / Kelas */}
+            <View style={styles.infoBox}>
+                <Text style={styles.label}>Role / Jabatan</Text>
+                <TextInput
+                  style={styles.input}
+                  value={userRole ? userRole.toUpperCase() : "MEMUAT..."}
+                  editable={false}
+                />
+            </View>
+
+            {/* Tombol Logout */}
             <TouchableOpacity 
               style={[styles.button, styles.logoutButton]}
-              onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Login' }] })}
+              onPress={logout} 
             >
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
         </View>
       </View>
+      
+      {/* Navigasi Bawah */}
       <BottomNavBar />
     </View>
   );
@@ -84,13 +108,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
   },
-
   backButton: {
     padding: 5,
   },
   backButtonText: {
-    fontSize: 40,
+    fontSize: 30,
     color: '#000',
+    fontWeight: 'bold'
   },
   headerTitle: {
     fontSize: 24,
@@ -124,10 +148,10 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 20, // Add some space above the button
+    marginTop: 20, 
   },
   logoutButton: {
-    backgroundColor: '#DC3545',
+    backgroundColor: '#DC3545', // Warna Merah untuk Logout
   },
   buttonText: {
     color: '#fff',

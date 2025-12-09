@@ -56,7 +56,7 @@ class RppResource extends Resource
                 Action::make('unduh')
                     ->label('Unduh')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Rpp $record): string => route('rpp.download', $record))
+                    ->url(fn (Rpp $record): string => route('rpps.download', $record))
                     ->openUrlInNewTab(),
                 Action::make('backup')
                     ->label('Backup')

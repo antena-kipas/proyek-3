@@ -1,42 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useMemo, useEffect, useCallback, useContext } from 'react';
+import { StyleSheet, View, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Text, Icon, TextInput } from 'react-native-paper';
+import { Text, Icon, TextInput, Button } from 'react-native-paper'; // Import Button untuk Coba Lagi
 import { RootStackParamList } from '../navigation/types';
 import BottomNavBar from '../components/BottomNavBar';
-import ConfirmationModal from '../components/ConfirmationModal';
-
+// import ConfirmationModal from '../components/ConfirmationModal'; // Tidak diperlukan lagi setelah tombol hapus/unduh dihapus
+import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
 type DaftarRPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DaftarRPP'>;
 
-// --- DUMMY DATA ---
-const rppData = [
-  {
-    id: 1,
-    mapel: 'Matematika',
-    topikMateri: 'Bangun Ruang Sisi Datar',
-    semester: 'Ganjil',
-    tujuan: ['Siswa dapat mengidentifikasi kubus.', 'Siswa dapat menghitung volume balok.']
-  },
-  {
-    id: 2,
-    mapel: 'Bahasa Indonesia',
-    topikMateri: 'Teks Prosedur',
-    semester: 'Ganjil',
-    tujuan: ['Siswa dapat memahami struktur teks prosedur.', 'Siswa dapat membuat teks prosedur sederhana.']
-  },
-];
-
-const user = {
-    nama: 'JAMAL',
-    kelas: 'XXII'
-};
-
 // --- KOMPONEN ---
 
-const Header = ({ onBackPress }: { onBackPress: () => void }) => (
+const Header = ({ onBackPress, userNama, userKelas }: { onBackPress: () => void; userNama: string; userKelas: string; }) => (
   <View style={styles.header}>
     <View style={styles.headerTop}>
       <TouchableOpacity onPress={onBackPress}>
@@ -45,19 +23,19 @@ const Header = ({ onBackPress }: { onBackPress: () => void }) => (
       <Text style={styles.headerTitle}>Daftar RPP</Text>
       <View style={{ width: 28 }} />
     </View>
-    <UserInfo />
+    <UserInfo nama={userNama} kelas={userKelas} />
   </View>
 );
 
-const UserInfo = () => (
+const UserInfo = ({ nama, kelas }: { nama: string; kelas: string; }) => (
     <View style={styles.userInfo}>
         <View>
             <Text style={styles.userInfoText}>Nama    : </Text>
             <Text style={styles.userInfoText}>Kelas      :</Text>
         </View>
         <View>
-            <Text style={styles.userInfoText}>{user.nama}</Text>
-            <Text style={styles.userInfoText}>{user.kelas}</Text>
+            <Text style={styles.userInfoText}>{nama}</Text>
+            <Text style={styles.userInfoText}>{kelas}</Text>
         </View>
     </View>
 );
@@ -78,37 +56,37 @@ const SearchBar = () => {
   );
 };
 
-const RPPItem = ({
-  item,
-  isLastItem,
-  onDownload,
-  onDelete
-}: {
-  item: typeof rppData[0],
-  isLastItem: boolean,
-  onDownload: (item: any) => void,
-  onDelete: (item: any) => void
-}) => (
-  <View>
-    <View style={styles.rppItem}>
-      <View style={styles.rppHeader}>
-        <Text style={styles.rppSubject}>Mapel: {item.mapel}</Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => onDownload(item)}>
-            <Icon source="download-outline" size={24} color="#007AFF" />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => onDelete(item)}>
-            <Icon source="trash-can-outline" size={24} color="#FF3B30" />
-          </TouchableOpacity>
-        </View>
+// Interface untuk struktur RPP dari backend
+interface RppItemData {
+  id: number;
+  semester: string;
+  pembelajaran_ke: string;
+  tema_id: string;
+  tema_name: string;
+  sub_tema_id: string;
+  sub_tema_name: string;
+  tujuan_pembelajarans: Array<{ tujuan_pembelajaran: string }>;
+  muatan_terpadus: Array<{ mata_pelajaran: string }>;
+  kegiatan_intis: Array<{ kelompok: string; konten: string; urutan: number; }>;
+}
+
+
+const RPPItem = ({ item }: { item: RppItemData }) => (
+  <View style={styles.rppItem}>
+    <View style={styles.rppHeader}>
+      <Text style={styles.rppSubject}>Tema: {item.tema_name} ({item.tema_id})</Text>
+      <View style={styles.iconContainer}>
+        {/* Tombol download dan delete dihapus sesuai permintaan */}
       </View>
-      <Text style={styles.rppDetail}>Topik Materi: {item.topikMateri}</Text>
-      <Text style={styles.rppDetail}>Semester: {item.semester}</Text>
-      {item.tujuan.map((t, i) => (
-        <Text key={i} style={styles.rppDetail}>Tujuan {i + 1}: {t}</Text>
-      ))}
     </View>
-    {!isLastItem && <View style={styles.separator} />}
+    <Text style={styles.rppDetail}>Sub Tema: {item.sub_tema_name} ({item.sub_tema_id})</Text>
+    <Text style={styles.rppDetail}>Semester: {item.semester}</Text>
+    <Text style={styles.rppDetail}>Pembelajaran Ke: {item.pembelajaran_ke}</Text>
+    {item.tujuan_pembelajarans && item.tujuan_pembelajarans.length > 0 && (
+      <Text style={styles.rppDetail}>
+        Tujuan Pembelajaran: {item.tujuan_pembelajarans.map(t => t.tujuan_pembelajaran).join(', ')}
+      </Text>
+    )}
   </View>
 );
 
@@ -116,99 +94,87 @@ const RPPItem = ({
 
 const DaftarRPPScreen = () => {
   const navigation = useNavigation<DaftarRPPScreenNavigationProp>();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalAction, setModalAction] = useState<'download' | 'delete' | null>(null);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [modalStatus, setModalStatus] = useState<'confirm' | 'loading' | 'success' | 'error'>('confirm');
+  const { userToken, userInfo } = useContext(AuthContext);
 
-  const handleDownload = (item: any) => {
-    setSelectedItem(item);
-    setModalAction('download');
-    setModalStatus('confirm');
-    setModalVisible(true);
-  };
+  const [rpps, setRpps] = useState<RppItemData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDelete = (item: any) => {
-    setSelectedItem(item);
-    setModalAction('delete');
-    setModalStatus('confirm');
-    setModalVisible(true);
-  };
-
-  const handleConfirm = () => {
-    setModalStatus('loading');
-    setTimeout(() => {
-      const isSuccess = Math.random() < 0.5;
-      if (isSuccess) {
-        setModalStatus('success');
-      } else {
-        setModalStatus('error');
+  const fetchRpps = useCallback(async (refresh = false) => {
+    if (refresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+    try {
+      const response = await axios.get('http://localhost:8000/api/rpps', {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      setRpps(response.data);
+    } catch (err: any) {
+      console.error('Failed to fetch RPPs:', err);
+      setError('Gagal memuat daftar RPP. Coba lagi nanti.');
+      if (err.response) {
+        console.error('Error response:', err.response.data);
       }
-    }, 2000);
-  };
-
-  const handleClose = () => {
-    setModalVisible(false);
-    setTimeout(() => {
-        setSelectedItem(null);
-        setModalAction(null);
-        setModalStatus('confirm');
-    }, 300);
-  };
-
-  const modalStrings = useMemo(() => {
-    if (!selectedItem) return { title: '', message: '', successMessage: '', errorMessage: '' };
-    const docName = `RPP "${selectedItem.mapel} - ${selectedItem.topikMateri}"`;
-    if (modalAction === 'download') {
-      return {
-        title: 'Konfirmasi Unduh',
-        message: `Apakah Anda yakin ingin mengunduh ${docName}?`,
-        successMessage: `${docName} BERHASIL diunduh.`,
-        errorMessage: `${docName} GAGAL diunduh.`,
-      };
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
     }
-    if (modalAction === 'delete') {
-      return {
-        title: 'Konfirmasi Hapus',
-        message: `Apakah Anda yakin ingin menghapus ${docName}?`,
-        successMessage: `${docName} BERHASIL dihapus.`,
-        errorMessage: `${docName} GAGAL dihapus.`,
-      };
-    }
-    return { title: '', message: '', successMessage: '', errorMessage: '' };
-  }, [selectedItem, modalAction]);
+  }, [userToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRpps();
+    }, [fetchRpps])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header onBackPress={() => navigation.goBack()} />
+      <Header onBackPress={() => navigation.goBack()} userNama={userInfo?.name ?? ''} userKelas={userInfo?.kelas?.toString() ?? ''} />
       <SearchBar />
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {rppData.map((item, index) => (
-          <RPPItem
-            key={item.id}
-            item={item}
-            isLastItem={index === rppData.length - 1}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ScrollView>
-      <BottomNavBar />
-      {selectedItem && (
-        <ConfirmationModal
-          visible={modalVisible}
-          status={modalStatus}
-          onConfirm={modalStatus === 'confirm' ? handleConfirm : handleClose}
-          onCancel={handleClose}
-          onRetry={handleConfirm}
-          title={modalStrings.title}
-          message={modalStrings.message}
-          messageColor={modalAction === 'delete' && modalStatus === 'confirm' ? 'red' : 'black'}
-          successMessage={modalStrings.successMessage}
-          errorMessage={modalStrings.errorMessage}
-          documentType="RPP"
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Button mode="outlined" onPress={() => fetchRpps(false)}>Coba Lagi</Button>
+        </View>
+      ) : (
+        <FlatList
+          data={rpps}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <RPPItem
+              item={item}
+            />
+          )}
+          contentContainerStyle={styles.flatListContent}
+          onRefresh={() => fetchRpps(true)}
+          refreshing={isRefreshing}
+          ListEmptyComponent={
+            <View style={styles.emptyListContainer}>
+              <Text style={styles.emptyListText}>Belum ada RPP yang dibuat.</Text>
+            </View>
+          }
         />
       )}
+      
+      {/* Tombol Buat RPP Baru */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('BuatRPP')} // Navigasi ke layar Buat RPP
+      >
+        <Icon source="plus" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      <BottomNavBar />
+      {/* ConfirmationModal tidak lagi digunakan */}
     </SafeAreaView>
   );
 };
@@ -257,15 +223,23 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: '#FFFFFF',
   },
-  // ScrollView
-  scrollViewContent: {
+  // FlatList content
+  flatListContent: {
     paddingHorizontal: 16,
     paddingTop: 10,
-    paddingBottom: 80, // Space for footer
+    paddingBottom: 80, // Space for footer and FAB
   },
   // RPP Item
   rppItem: {
-    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
   rppHeader: {
     flexDirection: 'row',
@@ -287,9 +261,51 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     lineHeight: 20,
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#D1D1D6',
+  // Loading & Error
+  loadingIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  emptyListContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyListText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+  // Floating Action Button
+  fab: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 90, // Above BottomNavBar
+    backgroundColor: '#007AFF',
+    borderRadius: 30,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
 });
 

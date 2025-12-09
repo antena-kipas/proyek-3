@@ -1,12 +1,8 @@
 ## To Do
 
-- 9. membuat template absensi
-- 10. membuat tampilan halaman absensi untuk user guru
-- 11. Membuat tampilan halaman  absensi untuk user admin
 
 ## Doing
 
-- 8. membuat seedeer untuk tbael kelas
 
 ## Done
 
@@ -26,3 +22,7 @@
     * [x] membuat tombol download silabus
 - 5. membuat funsi  backup silabus  seperti pada bagian rpp
 - 7. membuat tabel kelas
+- 9. membuat template absensi
+- 10. membuat tampilan halaman absensi untuk user guru
+- 8. membuat seedeer untuk tbael kelas
+- 11. Membuat tampilan halaman  absensi untuk user admin

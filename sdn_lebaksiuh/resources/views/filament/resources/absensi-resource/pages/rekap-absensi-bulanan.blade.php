@@ -59,7 +59,8 @@ use Carbon\Carbon;
                                 Unduh Excel
                             </x-filament::button>
                             <x-filament::button
-                                wire:click="deleteRekap({{ $rekap->kelas_saat_ini }}, {{ $rekap->bulan }}, {{ $rekap->tahun }})"
+                                wire:click="hapusData({{ $rekap->kelas_saat_ini }}, {{ $rekap->bulan }}, {{ $rekap->tahun }})"
+                                wire:confirm="Yakin ingin menghapus rekap Kelas {{ $rekap->kelas_saat_ini }}?"
                                 color="danger"
                                 size="sm"
                             >
@@ -144,4 +145,35 @@ use Carbon\Carbon;
             @endforeach
         </div>
     @endif
+
+
+@script
+<script>
+    window.addEventListener('swal:confirm', event => {
+        const detail = event.detail[0]; // Ambil data dari event PHP
+
+        Swal.fire({
+            title: detail.title,
+            text: detail.text,
+            icon: detail.icon,
+            showCancelButton: detail.showCancelButton,
+            confirmButtonColor: detail.confirmButtonColor,
+            cancelButtonColor: detail.cancelButtonColor,
+            confirmButtonText: detail.confirmButtonText,
+            cancelButtonText: detail.cancelButtonText,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // INI BAGIAN KUNCINYA
+                // Kita kirim parameter bernama kelas, bulan, tahun
+                // Agar cocok dengan: public function performDeleteRekap($kelas, $bulan, $tahun)
+                $wire.dispatch(detail.onConfirmed, { 
+                    kelas: detail.data.kelas, 
+                    bulan: detail.data.bulan, 
+                    tahun: detail.data.tahun 
+                });
+            }
+        });
+    });
+</script>
+@endscript
 </x-filament-panels::page>

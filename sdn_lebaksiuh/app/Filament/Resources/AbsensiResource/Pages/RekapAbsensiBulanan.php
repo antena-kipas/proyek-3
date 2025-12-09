@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Livewire\Attributes\On; 
 
 
 
@@ -560,109 +561,62 @@ class RekapAbsensiBulanan extends Page
     }
 
 
-
-
-
-    public function deleteRekap(int $kelas, int $bulan, int $tahun): void
-
-
+    public function hapusData($kelas, $bulan, $tahun) 
     {
-
-
-        $this->dispatchBrowserEvent('swal:confirm', [
-
-
-            'title' => 'Hapus Rekap Absensi?',
-
-
-            'text' => "Anda yakin ingin menghapus semua data absensi untuk Kelas {$kelas} bulan " . Carbon::createFromDate($tahun, $bulan, 1)->isoFormat('MMMM YYYY') . "? Tindakan ini tidak dapat dibatalkan!",
-
-
-            'icon' => 'warning',
-
-
-            'showCancelButton' => true,
-
-
-            'confirmButtonColor' => '#d33',
-
-
-            'cancelButtonColor' => '#3085d6',
-
-
-            'confirmButtonText' => 'Ya, hapus!',
-
-
-            'cancelButtonText' => 'Batal',
-
-
-            'onConfirmed' => 'performDeleteRekap', // This will call a Livewire method
-
-
-            'data' => ['kelas' => $kelas, 'bulan' => $bulan, 'tahun' => $tahun],
-
-
-        ]);
-
-
-    }
-
-
-
-
-
-    public function performDeleteRekap(array $data): void
-
-
-    {
-
-
-        $kelas = $data['kelas'];
-
-
-        $bulan = $data['bulan'];
-
-
-        $tahun = $data['tahun'];
-
-
-
-
-
+        // Logika hapus sama persis seperti performDeleteRekap
         Absensi::where('kelas_saat_ini', $kelas)
-
-
             ->whereYear('tanggal', $tahun)
-
-
             ->whereMonth('tanggal', $bulan)
-
-
             ->delete();
 
-
-
-
-
-        Notification::make()
-
-
-            ->title('Rekap absensi berhasil dihapus')
-
-
-            ->success()
-
-
-            ->send();
-
-
+        Notification::make()->title("Data Berhasil Dihapus")->success()->send();
         
-
-
-        $this->mount(); // Refresh the rekaps list
-
-
+        $this->mount(); // Refresh data
     }
 
+    #[On('performDeleteRekap')]
+    public function performDeleteRekap($kelas, $bulan, $tahun)
+    {
+        try {
+            // Kita langsung pakai variabel $kelas, $bulan, $tahun dari parameter
+            $affectedRows = Absensi::where('kelas_saat_ini', $kelas)
+                ->whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+                ->delete();
+
+            if ($affectedRows > 0) {
+                Notification::make()->title("Berhasil Dihapus")->success()->send();
+            } else {
+                Notification::make()->title("Data Tidak Ditemukan")->warning()->send();
+            }
+
+        } catch (\Exception $e) {
+            Notification::make()->title('Error')->body($e->getMessage())->danger()->send();
+        } 
+        
+        // PENTING: Jalankan ulang query untuk mengisi variabel $rekaps
+        // Tanpa ini, tabel akan kosong setelah delete
+        $this->mount(); 
+    }
+
+    public function refreshRekaps()
+    {
+        $user = Auth::user();
+        $query = Absensi::query();
+
+        if ($user->role === 'guru' && !is_null($user->kelas)) {
+            $query->where('kelas_saat_ini', $user->kelas);
+        }
+
+        $this->rekaps = $query
+            ->selectRaw('DISTINCT kelas_saat_ini, CAST(EXTRACT(YEAR FROM tanggal) AS INTEGER) as tahun, CAST(EXTRACT(MONTH FROM tanggal) AS INTEGER) as bulan')
+            ->orderBy('kelas_saat_ini')
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->get();
+    }
+
+    
+    
 
 }
