@@ -81,9 +81,8 @@ class SilabusForm
                                         // Subject teacher sees only their subject
                                         return MataPelajaran::where('nama_pelajaran', $user->mapel)->pluck('nama_pelajaran', 'id');
                                     } else {
-                                        // Homeroom teacher sees all subjects except PAI and PJOK
-                                        return MataPelajaran::whereNotIn('nama_pelajaran', ['Pendidikan Agama Islam', 'PJOK'])
-                                                            ->pluck('nama_pelajaran', 'id');
+                                        // Homeroom teacher sees all subjects
+                                        return MataPelajaran::all()->pluck('nama_pelajaran', 'id');
                                     }
                                 }
 

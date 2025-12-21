@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const API_URL = 'http://localhost:8000/api/login'; 
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
+    
     try {
       const response = await axios.post(API_URL, {
         email,
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
     } catch (error) {
-      console.error('Login failed:', error);
+      console.log('Login failed (handled):', error);
       throw error; 
     } finally {
       setIsLoading(false);
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await AsyncStorage.removeItem('userRole');
       await AsyncStorage.removeItem('userData');
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Logout failed (handled):', error);
     } finally {
       setIsLoading(false);
     }

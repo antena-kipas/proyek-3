@@ -96,7 +96,7 @@
         <p style="text-align: center; margin-top: -10px; margin-bottom: 30px;">Tahun Ajaran {{ date('Y') }}/{{ date('Y') + 1 }}</p>
 
         <div class="no-print">
-            <a href="javascript:history.back()" class="btn btn-back">Kembali</a>
+            <a href="{{ url('/') }}" class="btn btn-back">Kembali</a>
         </div>
 
         @forelse($siswaPerKelas as $kelas => $siswas)
