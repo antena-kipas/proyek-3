@@ -1,14 +1,21 @@
-name: Android APK Build
+name: Build Samgas APK
 
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+      - main
+    paths:
+      - 'samgas/**' # Only run when mobile code changes
+  workflow_dispatch:
 
 jobs:
-  build_android_apk:
+  build_and_release:
     runs-on: ubuntu-latest
+
+    # Set default working directory for all run steps
+    defaults:
+      run:
+        working-directory: samgas
 
     steps:
       - name: Checkout code
@@ -17,40 +24,34 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Use Node.js version 18
-
-      - name: Cache Node Modules
-        uses: actions/cache@v4
-        with:
-          path: samgas/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('samgas/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: samgas/package-lock.json # Path is relative to repo root
 
       - name: Install dependencies
-        run: |
-          cd samgas
-          npm install
+        run: npm install
 
       - name: Grant execute permission for gradlew
         run: |
-          cd samgas/android
+          cd android
           chmod +x gradlew
 
       - name: Build Android Release APK
         run: |
-          cd samgas/android
+          cd android
           ./gradlew assembleRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: samgas-android-apk
+          # Path is relative to the repo root
           path: samgas/android/app/build/outputs/apk/release/app-release.apk
 
       - name: Send APK to Telegram
         run: |
+          # Path for curl is relative to the working directory
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
                -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-               -F "document=@samgas/android/app/build/outputs/apk/release/app-release.apk" \
+               -F "document=@android/app/build/outputs/apk/release/app-release.apk" \
                -F "caption=Build APK baru dari branch '${{ github.ref_name }}' oleh '${{ github.actor }}'. Commit: '${{ github.event.head_commit.message }}'"
