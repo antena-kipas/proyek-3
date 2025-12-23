@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#6495ED', // Warna biru seperti di mockup
+    backgroundColor: '#6495ED', // Warna biru seperti  di mockup
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
