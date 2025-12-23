@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
-// Definisikan tipe untuk navigasi agar 'navigate' memiliki auto-complete dan type-checking
+// Definisikan tipe untuk navigasi agar 'navigate' memiliki auto-complete dan type-c hecking
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const BottomNavBar = () => {
