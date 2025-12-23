@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 // 1. Definisikan bentuk data User (Supaya TypeScript kenal)
 interface UserData {
@@ -34,13 +35,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userInfo, setUserInfo] = useState<UserData | null>(null); // <--- State baru
   const [isLoading, setIsLoading] = useState(true);
 
-  // Pastikan URL ini benar (localhost jika pakai adb reverse)
-  const API_URL = 'http://localhost:8000/api/login'; 
-
   const login = async (email: string, password: string) => {
     
     try {
-      const response = await axios.post(API_URL, {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
         email,
         password,
       });

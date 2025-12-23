@@ -9,6 +9,7 @@ import BottomNavBar from '../components/BottomNavBar';
 // import ConfirmationModal from '../components/ConfirmationModal'; // Tidak diperlukan lagi setelah tombol hapus/unduh dihapus
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 type DaftarRPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DaftarRPP'>;
 
@@ -109,7 +110,7 @@ const DaftarRPPScreen = () => {
     }
     setError(null);
     try {
-      const response = await axios.get('http://localhost:8000/api/rpps', {
+      const response = await axios.get(`${API_BASE_URL}/rpps`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },

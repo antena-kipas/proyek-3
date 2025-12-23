@@ -1,0 +1,56 @@
+name: Android APK Build
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  build_android_apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Use Node.js version 18
+
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: samgas/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('samgas/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: |
+          cd samgas
+          npm install
+
+      - name: Grant execute permission for gradlew
+        run: |
+          cd samgas/android
+          chmod +x gradlew
+
+      - name: Build Android Release APK
+        run: |
+          cd samgas/android
+          ./gradlew assembleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samgas-android-apk
+          path: samgas/android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Send APK to Telegram
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+               -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+               -F "document=@samgas/android/app/build/outputs/apk/release/app-release.apk" \
+               -F "caption=Build APK baru dari branch '${{ github.ref_name }}' oleh '${{ github.actor }}'. Commit: '${{ github.event.head_commit.message }}'"

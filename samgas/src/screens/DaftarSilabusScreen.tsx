@@ -8,6 +8,7 @@ import { RootStackParamList } from '../navigation/types';
 import BottomNavBar from '../components/BottomNavBar';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 type DaftarSilabusScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DaftarSilabus'>;
 
@@ -95,7 +96,7 @@ const DaftarSilabusScreen = () => {
     }
     setError(null);
     try {
-      const response = await axios.get('http://localhost:8000/api/silabus', {
+      const response = await axios.get(`${API_BASE_URL}/silabus`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },

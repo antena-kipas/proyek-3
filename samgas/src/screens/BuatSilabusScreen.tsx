@@ -5,6 +5,7 @@ import { Button, TextInput, Icon } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 import { RootStackParamList } from '../navigation/types';
 import { AuthContext } from '../context/AuthContext';
@@ -46,7 +47,7 @@ const BuatSilabusScreen = () => {
   useEffect(() => {
     const fetchMataPelajaran = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/mata-pelajaran', {
+        const response = await axios.get(`${API_BASE_URL}/mata-pelajaran`, {
           headers: { Authorization: `Bearer ${userToken}` },
         });
         const options = response.data.map((mapel: any) => ({
@@ -102,7 +103,7 @@ const BuatSilabusScreen = () => {
     setIsGenerating(true);
     try {
       const payload = { ...formData, kompetensi_intis: kompetensiIntis.map(item => ({ kompetensi_inti: item.kompetensi_inti })), kompetensi_dasars: kompetensiDasars.map(item => ({ deskripsi_kd: item.deskripsi_kd })), indikators: indikators.map(item => ({ deskripsi_indikator: item.deskripsi_indikator })), };
-      const response = await axios.post('http://localhost:8000/api/silabus/generate-details', payload, { headers: { Authorization: `Bearer ${userToken}` } });
+      const response = await axios.post(`${API_BASE_URL}/silabus/generate-details`, payload, { headers: { Authorization: `Bearer ${userToken}` } });
       if (response.data) {
         const addId = (items: any[]) => (items || []).map(item => ({ ...item, id: Date.now() + Math.random() }));
         setMateriPelajaran(addId(response.data.materi_pelajaran));
@@ -123,7 +124,7 @@ const BuatSilabusScreen = () => {
     try {
         const clean = (items: any[], key: string) => items.map(item => ({ [key]: item[key] }));
         const payload = { ...formData, kompetensiIntis: clean(kompetensiIntis, 'kompetensi_inti'), kompetensiDasars: clean(kompetensiDasars, 'deskripsi_kd'), indikators: clean(indikators, 'deskripsi_indikator'), materiPelajaran: clean(materiPelajaran, 'materi_pelajaran'), kegiatanPembelajaran: clean(kegiatanPembelajaran, 'kegiatan_pembelajaran'), penilaianDiri: clean(penilaianDiri, 'penilaian_diri'), };
-        await axios.post('http://localhost:8000/api/silabus', payload, { headers: { Authorization: `Bearer ${userToken}` } });
+        await axios.post(`${API_BASE_URL}/silabus`, payload, { headers: { Authorization: `Bearer ${userToken}` } });
         Alert.alert('Sukses', 'Silabus berhasil disimpan.', [{ text: 'OK', onPress: () => navigation.goBack() }]);
     } catch (err: any) {
         console.error('Save Silabus failed:', err);

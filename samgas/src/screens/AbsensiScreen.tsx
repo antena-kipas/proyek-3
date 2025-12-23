@@ -8,6 +8,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { Icon } from 'react-native-paper'; // Import Icon
+import { API_BASE_URL } from '../config/api';
 
 import { RootStackParamList } from '../navigation/types';
 import { AuthContext } from '../context/AuthContext';
@@ -50,7 +51,7 @@ const AbsensiScreen = () => {
     setStatuses({});
 
     try {
-      const response = await axios.get('http://localhost:8000/api/absensi', {
+      const response = await axios.get(`${API_BASE_URL}/absensi`, {
         headers: { Authorization: `Bearer ${userToken}` },
         params: {
           tanggal: formatDateForAPI(selectedDate),
@@ -90,7 +91,7 @@ const AbsensiScreen = () => {
         })),
       };
 
-      await axios.post('http://localhost:8000/api/absensi/simpan', payload, {
+      await axios.post(`${API_BASE_URL}/absensi/simpan`, payload, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
 

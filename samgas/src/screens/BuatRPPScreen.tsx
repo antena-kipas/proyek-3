@@ -9,6 +9,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import { AuthContext } from '../context/AuthContext';
 import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 type BuatRPPScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BuatRPP'>;
 
@@ -62,7 +63,7 @@ const BuatRPPScreen = () => {
     setIsGenerating(true);
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/rpp/generate-kegiatan-inti',
+        `${API_BASE_URL}/rpp/generate-kegiatan-inti`,
         {
           kelas,
           tema_name,
@@ -137,7 +138,7 @@ const BuatRPPScreen = () => {
         kegiatanIntis: kegiatanIntis,
       };
 
-      await axios.post('http://localhost:8000/api/rpps', payload, {
+      await axios.post(`${API_BASE_URL}/rpps`, payload, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
